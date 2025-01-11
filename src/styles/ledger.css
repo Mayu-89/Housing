@@ -1,0 +1,5 @@
+.account-name-input {
+    width: 100%;/* Use !important if necessary */
+    height: 56px; /* Adjust height as needed */
+    font-size: 16px; /* Optional: adjust font size for better visibility */
+}

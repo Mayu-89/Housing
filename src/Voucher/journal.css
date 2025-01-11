@@ -1,0 +1,130 @@
+.voucher-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); 
+  border: 1px solid rgb(132, 0, 255);
+  height: 100%; /* Ensure the container stretches */
+  max-height: 100vh; /* Use the full height of the viewport */
+}
+  .button-group-front-voucher{
+    display: flex;
+    justify-content: flex-start; 
+    margin-bottom: 15px; 
+    gap: 10px;
+  }
+  .voucher-form {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    height: fit-content;
+    overflow-y: auto; 
+    margin-top: 0%;
+  }
+  .receipt-form {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    height: 500px; /* Set a fixed height or min-height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 0%;
+  }
+
+  .purchase-form {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    height: fit-content; /* Set a fixed height or min-height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 0%;
+  }
+  .payment-form {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    height: fit-content; /* Set a fixed height or min-height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 0%;
+  }
+  .contra-form {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    height: fit-content; /* Set a fixed height or min-height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-top: 0%;
+  }
+  .MuiTextField-root {
+    margin-bottom: 8px; 
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; 
+    border-bottom: 1px solid transparent; 
+    row-gap: 50px;
+  }
+  
+  .input-group label {
+    margin-right:3px; 
+    width: 150px; 
+    font-weight: bold;
+    border-bottom: 1px solid transparent; 
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px; 
+  }
+  .custom-select {
+    width: 45%; /* Set the desired width */
+  }
+  
+  .submit {
+    color: white;
+    border: none;
+    padding: 8px 15px; 
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    background-color:#007bff;
+    width:100px;
+  }
+  .cancel {
+      background-color: red; 
+      margin: 0 5px; 
+      color: white; 
+      border: none; 
+      padding: 8px 15px; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 14px; 
+      transition: background-color 0.3s; 
+  }
+  
+  /* .propertytable-container{
+    border: 1px solid  rgb(94, 255, 0);
+   max-width: 1000px;
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    font-size: larger;
+  } */
+@media (max-width: 768px) {
+  .material-react-table {
+    max-width: 100%; 
+  }
+}
+@media (max-width: 768px) {
+  .container {
+      padding: 10px; 
+  }
+}

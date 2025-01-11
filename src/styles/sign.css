@@ -1,0 +1,202 @@
+/* body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f7fc;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #333;
+  overflow: hidden; 
+  box-sizing: border-box; 
+} */
+
+/* Container for the login form */
+.login {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(128, 0, 128, 0.4);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box; /* Ensures padding is inside the container's width */
+}
+
+/* Heading */
+.login h2{
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* Form fields */
+.logininfo {
+  margin-bottom: 15px;
+  text-align: left;
+  width: 100%;
+}
+
+.logininfo label {
+  font-size: 14px;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.logininfo input {
+  width: 100%; /* Ensures inputs take the full width of the container */
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box; /* Ensures padding and border are inside the input's width */
+}
+
+/* Input focus effect */
+.logininfo input:focus {
+  border-color: #3498db;
+}
+
+/* Sign In button styling */
+.signin-button {
+  background-color: #af844c; /* Green background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 15px 32px; /* Some padding */
+  text-align: center; /* Centered text */
+  text-decoration: none; /* Remove underline */
+  display: inline-block; /* Make the button an inline block */
+  font-size: 16px; /* Increase font size */
+  margin: 4px 2px; /* Some margin */
+  cursor: pointer; /* Pointer/hand icon */
+  border-radius: 8px; /* Rounded corners */
+  width: 100%; /* Full width button */
+}
+
+/* Optional: Add additional styles for hover, focus, and active states */
+.signin-button:hover {
+  background-color: #92a045; /* Darker green */
+}
+
+.signin-button:focus {
+  outline: none; /* Remove focus outline */
+  box-shadow: 0 0 3px 2px #5e3e8e; /* Add a focus shadow */
+}
+
+.signin-button:active {
+  background-color: #152de100; /* Even darker green */
+  box-shadow: 0 5px #666; /* Move it down a bit */
+  transform: translateY(4px); /* Simulate press effect */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  .login {
+    width: 90%;
+    padding: 15px;
+  }
+
+  .signin-button {
+    width: 100%; /* Make button full width on mobile */
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .logininfo label {
+    font-size: 12px;
+  }
+
+  .logininfo input {
+    font-size: 12px;
+    padding: 12px; /* Adjust padding to avoid the text being too close to the edges */
+  }
+}
+
+/* Responsive design for tablets (480px to 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  .login {
+    width: 80%;
+    padding: 25px;
+  }
+
+  .signin-button {
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .logininfo label {
+    font-size: 13px;
+  }
+
+  .logininfo input {
+    font-size: 13px;
+  }
+}
+
+/* Responsive design for large tablets and small desktop screens (768px to 1024px) */
+@media (max-width: 1024px) {
+  .login {
+    width: 70%;
+    padding: 30px;
+  }
+
+  .signin-button {
+    width: auto;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  .logininfo label {
+    font-size: 14px;
+  }
+
+  .logininfo input {
+    font-size: 14px;
+  }
+}
+
+/* Large screens (Desktop and above) */
+@media (min-width: 1025px) {
+  .login {
+    width: 400px; /* Fix width for large screens */
+    padding: 40px;
+  }
+
+  .signin-button {
+    width: auto;
+  }
+
+  h2 {
+    font-size: 26px;
+  }
+
+  .logininfo label {
+    font-size: 15px;
+  }
+
+  .logininfo input {
+    font-size: 15px;
+  }
+}

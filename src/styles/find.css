@@ -1,0 +1,79 @@
+.form-containerfind {
+  display:flex;
+  flex-direction: column;
+    margin:0 auto;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid rgb(0, 110, 255);
+    border-radius: 8px;
+    height: fit-content;
+}
+    h2 {
+        margin-bottom: 60px; /* Adjust the value as needed */
+        margin-top:20px;
+        align-items: center;
+        text-align: center;
+    }
+    
+
+.input-group {
+    display: flex;
+    align-items: center; /* Center vertically */
+    margin-bottom: 10px; /* Space between fields */
+    border-bottom: 1px solid transparent; /* Set a transparent bottom border */
+}
+
+.input-group label {
+    width: 150px; /* Set fixed width for the labels */
+    margin-right: 10px; /* Space between label and input */
+    border-bottom: 1px solid transparent; /* Set a transparent bottom border */
+}
+
+.input-wrapper {
+    display: flex; /* Allow the input to take the remaining space */
+    flex-direction: column;
+}
+.checkbox {
+    width: 40px; /* Set desired width */
+    margin-bottom: 0px; /* Reduce space between checkboxes */
+}
+
+.checkbox-label {
+    display: inline-block; /* Makes the label respect width */
+    width: 100%; /* Adjusts the label to take full width */
+}
+
+.input-wrapper .MuiFormControlLabel-root {
+    margin: 0; /* Adjusts margin between checkboxes */
+}
+
+.button-group-find {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search {
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    background-color: #007bff;
+    width:100px;
+}
+
+.cancel {
+    background-color: red;
+    margin: 0 5px;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    width: 100px;
+}
