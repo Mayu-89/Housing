@@ -9,7 +9,7 @@ const Updateproperty = () => {
   // State for form visibility
   const [showStructure, setShowStructure] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(true);  // To manage loading state
+  const [loading, setLoading] = useState(false);  // To manage loading state
   const [error, setError] = useState(null);      // To manage errors
 
   // State for each form field
@@ -57,12 +57,44 @@ const Updateproperty = () => {
   const [electricityBillGenerationDatesGSTINBills, setElectricityBillGenerationDatesGSTINBills] = useState('');
 
   // Option lists for combo boxes
-  const landAuthorityOptions = ['Private', 'FreeHold','MHADA','CIDCO','SRA','BMC','Collector Land'];
   const leaseDeedExecutedOptions = ['Yes', 'No'];
   const conveyanceDeedOptions = ['Yes', 'No'];
-  const propertyTaxAuthorityOptions = ['BMC', 'CIDCO', 'PMC'];
-  const waterSupplyAuthorityOptions = ['BMC', 'CIDCO','PMC'];
-  const electricitySupplyServiceProviderOptions = ['MAHADISCOM','BEST','Tata Power Ltd','Adani Electricity Mumbai Ltd'];
+
+   // State for options to populate dropdowns
+   const [landAuthorityOptions, setLandAuthorityOptions] = useState([]);
+   const [waterSupplyAuthorityOptions, setWaterSupplyAuthorityOptions] = useState([]);
+   const [electricitySupplyServiceProviderOptions, setElectricitySupplyServiceProviderOptions] = useState([]);
+   const [propertyTaxAuthorityOptions, setPropertyTaxAuthorityOptions] = useState([]);
+ 
+ // Function to fetch data for each dropdown
+ const fetchOptions = async (tableName, setter) => {
+  setLoading(true);
+  setError('');
+  try {
+    const response = await fetch(`https://weaveitapp.microtechsolutions.co.in/api/housing/Get/gettable.php?Table=${tableName}`, {
+      method: 'GET', // Specify the method as GET
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',  // Content-Type header
+        'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',  // API key for authentication
+      },
+    });
+
+    const data = await response.json(); // Parse the JSON response
+    setter(data); // Update the state with the fetched data
+  } catch (err) {
+    setError(`Failed to load data for ${tableName}`);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Fetch data when component mounts
+useEffect(() => {
+  fetchOptions('LandAuthority', setLandAuthorityOptions);
+  fetchOptions('WaterSupplyAuthority', setWaterSupplyAuthorityOptions);
+  fetchOptions('ElectricitySupply', setElectricitySupplyServiceProviderOptions);
+  fetchOptions('PropertyTaxAuthority', setPropertyTaxAuthorityOptions);
+}, []);
 
   const [registrationNo, setRegistrationNo] = useState('');
   const [registrationDate, setRegistrationDate] = useState('');
@@ -87,107 +119,6 @@ const Updateproperty = () => {
   };
 
 
-// Define base API URL
-const API_BASE_URL = "https://weaveitapp.microtechsolutions.co.in/api/housing";
-
-// API Key
-const API_KEY = 'f4e3d2c1b0a9g8h7i6j5';
-
-// Function for GET request
-// useEffect(() => {
-//   const fetchData = async () => {
-//     try {
-//       const response = await fetch(`${API_BASE_URL}/Get/gettable.php`, {
-//         method: 'GET',
-//         headers: {
-//           'Table':'SocietyStructure',
-//           'x-api-key': API_KEY,
-//         },
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch data');
-//       }
-
-//       const data = await response.json();
-//       setPropertyData(data); // Set the fetched data to the state
-//       setLoading(false);
-//     } catch (err) {
-//       console.error('Error fetching data:', err);
-//       setError(err.message);  // Set error if API call fails
-//       setLoading(false);
-//       toast.error('Failed to load property data!');
-//     }
-//   };
-
-//   fetchData();  // Call fetchData function when the component mounts
-// }, []);  // Empty dependency array makes it run only once when the component mounts
-
-// // If data is loading, show loading message
-// if (loading) {
-//   return <div>Loading...</div>;
-// }
-
-// // If there is an error, show error message
-// if (error) {
-//   return <div>Error: {error}</div>;
-// }
-// Function for POST request
-const postData = async (propertyData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/Post/postsocietystructure.php`, {
-      method: 'POST',
-      headers: {
-        'x-api-key': API_KEY,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify(propertyData),
-    });
-
-    const data = await response.json();
-    console.log("POST Response Data: ", data);
-  } catch (error) {
-    console.error("Error posting data: ", error);
-  }
-};
-
-// Function for PUT request (Update existing data)
-const updateData = async (propertyData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/Update/updatesocietystructure.php`, {
-      method: 'PUT',
-      headers: {
-        'x-api-key': API_KEY,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify(propertyData),
-    });
-
-    const data = await response.json();
-    console.log("PUT Response Data: ", data);
-  } catch (error) {
-    console.error("Error updating data: ", error);
-  }
-};
-
-// Function for DELETE request
-const deleteData = async (propertyId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/Delete/delrecord.php`, {
-      method: 'DELETE',
-      headers: {
-        'x-api-key': API_KEY,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: JSON.stringify({ id: propertyId }), // Sending the property ID for deletion
-    });
-
-    const data = await response.json();
-    console.log("DELETE Response Data: ", data);
-  } catch (error) {
-    console.error("Error deleting data: ", error);
-  }
-};
 
   // // Handle Save (Add new property)
   // const handleSave = async () => {
@@ -218,78 +149,8 @@ const deleteData = async (propertyId) => {
   //   setShowForm(false);
   // };
 
-  const handleSave = async (event) => {
-    event.preventDefault(); // Prevent form submission
-    
-    const formData = {
-      noOfUnits,
-      noOfWings,
-      nameOfWing,
-      typeOfUnit,
-      unitOfMeasurement,
-      landAuthority,
-      leaseDeedExecuted,
-      registrationNo,
-      registrationDate,
-      leasePeriod,
-      leaseRentPremiumRs,
-      ctsNo,
-      plotNo,
-      village,
-      plotArea,
-      onEast,
-      onWest,
-      onNorth,
-      onSouth,
-      conveyanceDeed,
-      cregistrationNo,
-      cregistrationDate,
-      landConveyanceName,
-      nonAgriculturalTax,
-      naTaxPremiumRs,
-      propertyTaxAuthority,
-      propertyTaxNo,
-      propertyTaxPremiumGSTINBills,
-      waterSupplyAuthority,
-      noOfWaterConnections,
-      waterConnectionNo,
-      waterBillGenerationDatesGSTINBills,
-      electricitySupplyServiceProvider,
-      electricityConnectionNo,
-      waterBillGenerationDatesGSTINBills,
-    };
-    
-    try {
-      const response = await fetch(`${API_BASE_URL}/Post/postsocietystructure.php`, {
-        method: 'POST',
-        headers: {
-        'x-api-key': API_KEY,
-        'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: JSON.stringify(formData), // Send the data
-      });
-      const result = await response.json();
-      if (response.ok) {
-        // Handle success (maybe show a toast notification)
-        alert('Data saved successfully!');
-      } else {
-        // Handle error (maybe show a toast notification)
-        alert('Error saving data');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred');
-    }
-  };
+
   
-
-
-
-  const handleDelete = (index) =>{
-    const updatedData = propertyData.filter((_, index) => index !== index);
-    setPropertyData(updatedData); // Update the table after deletion
-    toast.success("Form deleted Sucessfully!")
-  };
   // Handle Edit (Populate form fields with selected property data)
   const handleEdit = (index) => {
     setShowForm(true);
@@ -335,7 +196,7 @@ const deleteData = async (propertyId) => {
       electricityBillGenerationDatesGSTINBills
     };
  // PUT request
- await updateData(updatedProperty);
+//  await updateData(updatedProperty);
  
     const updatedData = [...propertyData]; // Clone the existing data
     updatedData[editIndex] = updatedProperty; // Update the property at the edit index
@@ -365,20 +226,7 @@ const deleteData = async (propertyId) => {
     setElectricityBillGenerationDatesGSTINBills('');
     setEditIndex(null); // Reset the edit index
   };
-  const handlePropertyDelete  = async (index) => {
-    const propertyId = propertyData[index].srNo; // Assume you are passing 'srNo' as the unique identifier
   
-    // DELETE request
-    await deleteData(propertyId);
-  
-    const updatedData = propertyData.filter((_, i) => i !== index);
-    setPropertyData(updatedData);
-    toast.success("Form deleted successfully!");
-  };
-  // const handlePropertyDelete = (index) => {
-  //   console.log("Delete property at index:", index);
-  //   setPropertyData((prevData) => prevData.filter((_, i) => i !== index));
-  // };
 
   <ToastContainer/>
   return (
@@ -501,24 +349,29 @@ const deleteData = async (propertyId) => {
       )}
 {/* property details form */}
 {showForm && (
-        <form onSubmit={handleSave} className="property-form">
+        <form  className="property-form">
           <h3 style={{ textAlign: 'center', marginBottom: '30px', marginTop: '0px' }}>Property Details</h3>
           <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
-              <div className="input-group">
-                <label>Land Authority</label>
-                  <Select
-                    value={landAuthority}
-                    onChange={(e) => setLandAuthority(e.target.value)}
-                     className="input-select"
-                  >
-                    {landAuthorityOptions.map((option, index) => (
-                      <MenuItem key={index} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-              </div>
+          <div className="input-group">
+        <label>Land Authority</label>
+        <Select
+          value={landAuthority}
+          onChange={(e) => setLandAuthority(e.target.value)}
+          className="input-select"
+          disabled={loading}
+        >
+          {loading ? (
+            <MenuItem value="">Loading...</MenuItem>
+          ) : error ? (
+            <MenuItem value="">{error}</MenuItem>
+          ) : (
+            landAuthorityOptions.map((option, index) => (
+              <MenuItem key={index} value={option.Id}>{option.AuthorityName}</MenuItem>
+            ))
+          )}
+        </Select>
+      </div>
             </Grid>
               {/* Lease Deed Executed */}
               {landAuthority !== 'Free Hold' && (
@@ -780,18 +633,23 @@ const deleteData = async (propertyId) => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <div className="input-group">
-                <label>Property Tax Authority</label>
-                  <Select
-                    value={propertyTaxAuthority}
-                    onChange={(e) => setPropertyTaxAuthority(e.target.value)}
-                     className="input-select"
-                  >
-                    {propertyTaxAuthorityOptions.map((option, index) => (
-                      <MenuItem key={index} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
+              <label>Property Tax Authority</label>
+        <Select
+          value={propertyTaxAuthority}
+          onChange={(e) => setPropertyTaxAuthority(e.target.value)}
+          className="input-select"
+          disabled={loading}
+        >
+          {loading ? (
+            <MenuItem value="">Loading...</MenuItem>
+          ) : error ? (
+            <MenuItem value="">{error}</MenuItem>
+          ) : (
+            propertyTaxAuthorityOptions.map((option, index) => (
+              <MenuItem key={index} value={option.Id}>{option.AuthorityName}</MenuItem>
+            ))
+          )}
+        </Select>
               </div>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -818,21 +676,25 @@ const deleteData = async (propertyId) => {
               </div>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <div className="input-group">
-                <label>Water Supply Authority</label>
-                  <Select
-                  size="small"
-                    value={waterSupplyAuthority}
-                    onChange={(e) => setWaterSupplyAuthority(e.target.value)}
-                     className="input-select"
-                  >
-                    {waterSupplyAuthorityOptions.map((option, index) => (
-                      <MenuItem key={index} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-              </div>
+            <div className="input-group">
+        <label>Water Supply Authority</label>
+        <Select
+          value={waterSupplyAuthority}
+          onChange={(e) => setWaterSupplyAuthority(e.target.value)}
+          className="input-select"
+          disabled={loading}
+        >
+          {loading ? (
+            <MenuItem value="">Loading...</MenuItem>
+          ) : error ? (
+            <MenuItem value="">{error}</MenuItem>
+          ) : (
+            waterSupplyAuthorityOptions.map((option, index) => (
+              <MenuItem key={index} value={option.Id}>{option.AuthorityName}</MenuItem>
+            ))
+          )}
+        </Select>
+      </div>
             </Grid>
             <Grid item xs={12} sm={6}>
               <div className="input-group">
@@ -870,17 +732,22 @@ const deleteData = async (propertyId) => {
             <Grid item xs={12} sm={6}>
               <div className="input-group">
                 <label>Electricity Supply Service Provider</label>
-                  <Select
-                    value={electricitySupplyServiceProvider}
-                    onChange={(e) => setElectricitySupplyServiceProvider(e.target.value)}
-                  className="input-select"
-                 >
-                    {electricitySupplyServiceProviderOptions.map((option, index) => (
-                      <MenuItem key={index} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                <Select
+          value={electricitySupplyServiceProvider}
+          onChange={(e) => setElectricitySupplyServiceProvider(e.target.value)}
+          className="input-select"
+          disabled={loading}
+        >
+          {loading ? (
+            <MenuItem value="">Loading...</MenuItem>
+          ) : error ? (
+            <MenuItem value="">{error}</MenuItem>
+          ) : (
+            electricitySupplyServiceProviderOptions.map((option, index) => (
+              <MenuItem key={index} value={option.Id}>{option.SupplierName}</MenuItem>
+            ))
+          )}
+        </Select>
               </div>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -918,7 +785,7 @@ const deleteData = async (propertyId) => {
           <button
               type="button"
               className="submit"
-              onClick={editIndex === null ? handleSave : handleUpdate}
+              // onClick={editIndex === null ? handleSave : handleUpdate}
             >
               {editIndex === null ? 'Save' : 'Update'}
             </button>
@@ -963,7 +830,7 @@ const deleteData = async (propertyId) => {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => handleDelete(row.index)}
+                    // onClick={() => handleDelete(row.index)}
                   >
                     Delete
                   </Button>

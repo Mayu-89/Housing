@@ -21,6 +21,12 @@ const Organization = () => {
     const [formedDate, setFormedDate] = useState('');
     const [showorganization, setShoworganization] = useState();
 
+
+// State for options to populate dropdowns
+   const [stateOptions, setStateOptions] = useState([]);
+   const [registeringOptions, setRegisteringOptions] = useState([]);
+
+
      // Data for table
   const [OrganizationData, setOrganizationData] = useState([]);
   
@@ -32,6 +38,38 @@ const Organization = () => {
     return date.toLocaleDateString(); // This will return the date in MM/DD/YYYY format, or you can format as needed
 };
 
+ const [loading, setLoading] = useState(false);  // To manage loading state
+  const [error, setError] = useState(null);      // To manage errors
+
+
+  const fetchOptions = async (tableName, setter) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`https://weaveitapp.microtechsolutions.co.in/api/housing/Get/gettable.php?Table=${tableName}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',  // Replace with your actual API key
+        },
+      });
+
+      const data = await response.json();
+      console.log(data);  // Log the response data to verify structure
+      setter(data);  // Update the state with the fetched data
+    } catch (err) {
+      setError(`Failed to load data for ${tableName}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOptions('Statenew', setStateOptions);
+    fetchOptions('RegisteringAuthority', setRegisteringOptions);
+  }, []);
+  
  useEffect(() => {
     fetchData();
 }, []);
@@ -98,7 +136,8 @@ const handleSubmit = async (e) => {
         if (response.ok) {
             const data = await response.json();
             toast.success('Society added successfully!', {autoClose: 5000, });
-            setOrganizationData([...OrganizationData, data]); // Assuming backend returns inserted data
+            fetchData();
+            // setOrganizationData((prevData) => [...prevData, fetchData]); // Assuming backend returns inserted data
         } else {
             const errorData = await response.json();
             console.error('Error Response:', errorData);
@@ -244,8 +283,7 @@ const columns = [
         setRegisteredDate('');
         setFormedDate('');
         setShoworganization(false);    
-    };
-
+    }; 
     return (
         <div className="society-container">
               {!showorganization && (
@@ -311,14 +349,18 @@ const columns = [
                 size="small"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                required
                 style={{ width: '230px' }}
+              
               >
-                <MenuItem value="" disabled>Select State</MenuItem>
-                <MenuItem value="India">India</MenuItem>
-                <MenuItem value="USA">USA</MenuItem>
-                <MenuItem value="SouthAfrica">SouthAfrica</MenuItem>
-              </Select>
+              {loading ? (
+            <MenuItem value="">Loading...</MenuItem>
+          ) : error ? (
+            <MenuItem value="">{error}</MenuItem>
+          ) : (
+            stateOptions.map((option, index) => (
+                <MenuItem key={index} value={option.StateName}>{option.StateName}</MenuItem>  // Use StateName as the value
+            ))
+          )}</Select>
                     </div>
                    
                 </Grid>
@@ -390,13 +432,17 @@ const columns = [
     onChange={(e) => setRegisteringAuthority(e.target.value)}  // Update authority when changed
     required
     style={{ width: '230px' }}
+  
 >
-    <MenuItem value="" disabled>Select Registering Authority</MenuItem>
-    <MenuItem value="deputy-registrar">Deputy Registrar</MenuItem>
-    <MenuItem value="assistant-registrar">Assistant Registrar</MenuItem>
-    <MenuItem value="cooperative-societies">Cooperative Societies</MenuItem>
-    <MenuItem value="ward">Ward</MenuItem>
-    <MenuItem value="tal">Tal</MenuItem>
+{loading ? (
+            <MenuItem value="">Loading...</MenuItem>
+          ) : error ? (
+            <MenuItem value="">{error}</MenuItem>
+          ) : (
+            registeringOptions.map((option, index) => (
+              <MenuItem key={index} value={option.AuthorityName}>{option.AuthorityName}</MenuItem>
+            ))
+          )}
 </Select>
                     </div>
                 </Grid>
