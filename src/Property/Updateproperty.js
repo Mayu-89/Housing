@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Button, TextField, Grid,Select, MenuItem } from '@mui/material';
+import { Button, TextField, Grid,Select, MenuItem,Paper,Typography } from '@mui/material';
 import { MaterialReactTable } from 'material-react-table';
 import { toast,ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,10 +19,12 @@ const Updateproperty = () => {
   const [typeOfUnit, setTypeOfUnit] = useState('');
   const [unitOfMeasurement, setUnitOfMeasurement] = useState('');
  
+  const [tableData, setTableData] = useState([]); // State to store table data
 
   // Option lists for comboboxes
   const typeOfUnitOptions = ['Flat', 'Office', 'Shop']; 
   const unitOfMeasurementOptions = ['Sqft', 'Sqm']; 
+  const [selectedId, setSelectedId] = useState(null);
 
 
   const [editIndex, setEditIndex] = useState(null); // Track the current property being edited
@@ -90,6 +92,7 @@ const Updateproperty = () => {
 
 // Fetch data when component mounts
 useEffect(() => {
+  fetchData();
   fetchOptions('LandAuthority', setLandAuthorityOptions);
   fetchOptions('WaterSupplyAuthority', setWaterSupplyAuthorityOptions);
   fetchOptions('ElectricitySupply', setElectricitySupplyServiceProviderOptions);
@@ -120,92 +123,6 @@ useEffect(() => {
 
 
 
-  // // Handle Save (Add new property)
-  // const handleSave = async () => {
-  //   const newProperty = {
-  //     srNo: propertyData.length + 1,
-  //     landAuthority,
-  //     leaseDeedExecuted,
-  //     leasePeriod,
-  //     leaseRentPremiumRs,
-  //     ctsNo,
-  //     village,
-  //     plotNo,
-  //     plotArea,
-  //     onEast,
-  //     onWest,
-  //     onNorth,
-  //     onSouth,
-  //     propertyTaxPremiumGSTINBills,
-  //     waterBillGenerationDatesGSTINBills,
-  //     electricitySupplyServiceProvider,
-  //     electricityBillGenerationDatesGSTINBills
-  //   };
-  //    // POST request
-  // await postData(newProperty);
-  //   toast.success('Form submitted successfully!');
-  //   setPropertyData([...propertyData, newProperty]); // Add new property data to the table
-  //   resetForm(); // Reset form after saving
-  //   setShowForm(false);
-  // };
-
-
-  
-  // Handle Edit (Populate form fields with selected property data)
-  const handleEdit = (index) => {
-    setShowForm(true);
-    const property = propertyData[index];
-    setLandAuthority(property.landAuthority);
-    setLeaseDeedExecuted(property.leaseDeedExecuted);
-    setLeasePeriod(property.leasePeriod);
-    setLeaseRentPremiumRs(property.leaseRentPremiumRs);
-    setCtsNo(property.ctsNo);
-    setVillage(property.village);
-    setPlotNo(property.plotNo);
-    setPlotArea(property.plotArea);
-    setonEast(property.onEast);
-    setonWest(property.onWest);
-    setonNorth(property.onNorth);
-    setonSouth(property.onSouth);
-    setPropertyTaxPremiumGSTINBills(property.propertyTaxPremiumGSTINBills);
-    setWaterBillGenerationDatesGSTINBills(property.waterBillGenerationDatesGSTINBills);
-    setElectricitySupplyServiceProvider(property.electricitySupplyServiceProvider);
-    setElectricityBillGenerationDatesGSTINBills(property.electricityBillGenerationDatesGSTINBills);
-    setEditIndex(index); // Set the edit index so we can update the specific property
-  };
-
-  // Handle Update (Update existing property)
-  const handleUpdate = async () => {
-    const updatedProperty = {
-      srNo: propertyData[editIndex].srNo,
-      landAuthority,
-      leaseDeedExecuted,
-      leasePeriod,
-      leaseRentPremiumRs,
-      ctsNo,
-      village,
-      plotNo,
-      plotArea,
-     onEast,
-     onWest,
-     onNorth,
-     onSouth,
-      propertyTaxPremiumGSTINBills,
-      waterBillGenerationDatesGSTINBills,
-      electricitySupplyServiceProvider,
-      electricityBillGenerationDatesGSTINBills
-    };
- // PUT request
-//  await updateData(updatedProperty);
- 
-    const updatedData = [...propertyData]; // Clone the existing data
-    updatedData[editIndex] = updatedProperty; // Update the property at the edit index
-    setPropertyData(updatedData); // Set the updated data back to the table
-    toast.success("Form updated sucessfully");
-    resetForm(); // Reset form after updating
-    setShowForm(false);
-  };
-
   // Reset form fields
   const resetForm = () => {
     setLandAuthority('');
@@ -226,9 +143,222 @@ useEffect(() => {
     setElectricityBillGenerationDatesGSTINBills('');
     setEditIndex(null); // Reset the edit index
   };
-  
 
-  <ToastContainer/>
+ 
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Get/gettable.php?Table=PropertyStructure', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+        },
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
+      setTableData(data); // Store fetched data in state
+    } catch (error) {
+      setError('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+ // Handle form submission (Save or Update)
+ const handleSaveStructure = async (e) => {
+  e.preventDefault();
+  const formData = new URLSearchParams();
+  formData.append('NoOfUnits', noOfUnits);
+  formData.append('NoOfWings', noOfWings);
+  formData.append('NameOfWing', nameOfWing);
+  formData.append('TypeOfUnit', typeOfUnit);
+  formData.append('UnitOfMeasurement', unitOfMeasurement);
+
+  try {
+    const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Post/postpropertystructure.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Request failed');
+    }
+
+    const result = await response.json();
+    console.log('Save result:', result);
+
+    toast.success('Structure saved successfully!');
+    setShowStructure(false); // Close the form after saving
+    fetchData(); // Refresh the data after saving
+
+  } catch (error) {
+    toast.error('Error: ' + error.message);
+  }
+  resetStructureForm(); // Reset the form
+};
+
+// Update function to modify an existing record based on Id
+const handleUpdateStructure = async (e) => {
+  e.preventDefault();
+
+  if (!selectedId) {
+    toast.error('No ID selected for update.');
+    return;
+  }
+
+  // Log the data to check what is being sent
+  console.log('Updating data with ID:', selectedId);
+
+  // Prepare form data
+  const formData = new URLSearchParams();
+  formData.append('Id', selectedId);
+  formData.append('NoOfUnits', noOfUnits);
+  formData.append('NoOfWings', noOfWings);
+  formData.append('NameOfWing', nameOfWing);
+  formData.append('TypeOfUnit', typeOfUnit);
+  formData.append('UnitOfMeasurement', unitOfMeasurement);
+
+  try {
+    const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatepropertystructure.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+      },
+      body: formData,
+    });
+
+    // Check if response is successful
+    if (!response.ok) {
+      throw new Error('Request failed');
+    }
+
+    // Check content type of the response
+    const contentType = response.headers.get("Content-Type");
+
+    let result;
+    if (contentType && contentType.includes("application/json")) {
+      // Parse the response as JSON if the content type is JSON
+      result = await response.json();
+    } else {
+      // Otherwise, handle it as text
+      result = await response.text();
+    }
+
+    console.log('Update Result:', result);
+
+    // Check if the result contains a success message (assuming it's a string like 'Value Updated Successfully')
+    if (typeof result === 'string' && result.includes('Value Updated Successfully')) {
+      toast.success('Structure updated successfully!');
+    } else if (result && result.success) {
+      // If the response is JSON with a success property
+      toast.success('Structure updated successfully!');
+    } else {
+      toast.error('Failed to update structure');
+    }
+
+    setShowStructure(false);
+    setSelectedId(null); // Clear selectedId after update
+    fetchData(); // Refresh data after updating
+  } catch (error) {
+    console.error('Update error:', error);
+    toast.error('Error: ' + error.message);
+  }
+  resetStructureForm();
+};
+
+
+const handleStructureEdit = (index) => {
+  const selectedRecord = tableData[index];
+  setSelectedId(selectedRecord.Id);
+  setNameOfWing(selectedRecord.NameOfWing);
+  setNoOfUnits(selectedRecord.NoOfUnits);
+  setNoOfWings(selectedRecord.NoOfWings);
+  setTypeOfUnit(selectedRecord.TypeOfUnit);
+  setUnitOfMeasurement(selectedRecord.UnitOfMeasurement);
+  setShowStructure(true);
+};
+
+// Delete function with proper handling of unexpected token
+const handleStructureDelete = async (index) => {
+  const id = tableData[index].Id;
+  try {
+    const response = await fetch(
+      `https://weaveitapp.microtechsolutions.co.in/api/housing/Delete/delrecord.php?Id=${id}&Table=PropertyStructure`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to delete structure');
+    }
+
+    const result = await response.text(); // Expecting plain text response
+    if (result === 'Value Deleted') {
+      toast.success('Structure deleted successfully!');
+    } else {
+      throw new Error('Unexpected response');
+    }
+
+    fetchData(); // Refresh data after deletion
+  } catch (error) {
+    toast.error('Error: ' + error.message);
+  }
+};
+
+const resetStructureForm = () => {
+  // setNoOfUnits('');
+  // setNoOfWings('');
+  setNameOfWing('');
+  setTypeOfUnit('');
+  setUnitOfMeasurement('');
+  setSelectedId(null);
+};
+
+
+  const columns = [
+    { accessorKey: 'Id', header: 'Id' },
+    { accessorKey: 'NoOfUnits', header: 'No Of Units' },
+    { accessorKey: 'NoOfWings', header: 'No Of Wings' },
+    { accessorKey: 'NameOfWing', header: 'Name Of Wing' },
+    { accessorKey: 'TypeOfUnit', header: 'Type Of Unit' },
+    { accessorKey: 'UnitOfMeasurement', header: 'Unit Of Measurement' },
+    {
+      accessorKey: 'actions',
+      header: 'Actions',
+      Cell: ({ row }) => (
+        <div>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleStructureEdit(row.index)}
+          >
+            Edit
+          </Button>
+          <Button
+             variant="contained"
+             color="secondary"
+            onClick={() => handleStructureDelete(row.index)}
+          >
+            Delete
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="structure-container">
       {!showForm && !showStructure && (
@@ -257,8 +387,8 @@ useEffect(() => {
       {/* Structure Details Form */}
       <ToastContainer />
       {showStructure && (
-        <form onSubmit={handleFilter} className="structure-form">
-          <h3 style={{ textAlign: 'center', marginBottom: '30px', marginTop: '0px' }}>Structure Details</h3>
+      <form onSubmit={selectedId ? handleUpdateStructure : handleSaveStructure} className="structure-form">
+           <h3>{selectedId ? 'Edit Structure Details' : 'New Structure Details'}</h3>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
               <div className="input-group">
@@ -266,6 +396,7 @@ useEffect(() => {
                 <TextField
   size="small"
   value={noOfUnits}
+  onChange={(e) => setNoOfUnits(e.target.value)}
   InputProps={{
     readOnly: true, // Making the field read-only
     style: {
@@ -282,6 +413,7 @@ useEffect(() => {
                 <TextField
   size="small"
   value={noOfWings}
+  onChange={(e) => setNoOfWings(e.target.value)}
   InputProps={{
     readOnly: true, // Making the field read-only
     style: {
@@ -342,7 +474,7 @@ useEffect(() => {
             </Grid>
           </Grid>
           <div className="button-group-bottom">
-            <button type="submit" className="submit">Search</button>
+            <button type="submit" className="submit">  {selectedId ? 'Update' : 'Save'} </button>
             <button type="button" onClick={closeForm} className="cancel">Close</button>
           </div>
         </form>
@@ -787,14 +919,29 @@ useEffect(() => {
               className="submit"
               // onClick={editIndex === null ? handleSave : handleUpdate}
             >
-              {editIndex === null ? 'Save' : 'Update'}
+              {/* {editIndex === null ? 'Save' : 'Update'} */}
             </button>
             <button type="button" onClick={closeForm} className="cancel">Close</button>
           </div>
         </form>
       )}
+      {!showForm && !showStructure &&  (
+   <Paper style={{ marginTop: '20px', padding: '10px', maxWidth: '1000px', margin: '0 auto' }}>
+<MaterialReactTable
+          data={tableData} // Make sure this is correctly bound to the state
+          columns={columns}
+          muiTableHeadCellProps={{
+            style: {
+              backgroundColor: '#E9ECEF',
+              color: 'black',
+              fontSize: '14px',
+            },
+          }}
+        />
+        </Paper>
+)}
 {!showForm && !showStructure && (
-        <div className="propertytable-container">
+   <Paper style={{ marginTop: '20px', padding: '10px', maxWidth: '1000px', margin: '0 auto' }}>
         <MaterialReactTable
           columns={[
             { accessorKey: 'srNo', header: 'SR No.' },
@@ -822,7 +969,7 @@ useEffect(() => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleEdit(row.index)}
+                    // onClick={() => handleEdit(row.index)}
                     style={{ marginRight: '10px' }}
                   >
                     Edit
@@ -846,10 +993,9 @@ useEffect(() => {
               fontSize: '14px',
             },
           }}
-        />
-      </div>
+        /></Paper>   
 )}
-    </div>
+      </div>
   );
 };
 
