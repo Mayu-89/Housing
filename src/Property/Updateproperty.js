@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { Button, TextField, Grid,Select, MenuItem,Paper,Typography } from '@mui/material';
 import { MaterialReactTable } from 'material-react-table';
+import { format } from 'date-fns';
 import { toast,ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
 import './updateproperty.css';
@@ -34,18 +35,18 @@ const Updateproperty = () => {
   const [landAuthority, setLandAuthority] = useState('');
   const [leaseDeedExecuted, setLeaseDeedExecuted] = useState('');
   const [leasePeriod, setLeasePeriod] = useState('');
-  const [leaseRentPremiumRs, setLeaseRentPremiumRs] = useState('');
+  const [leaseRent, setLeaseRent] = useState('');
   const [ctsNo, setCtsNo] = useState('');
   const [village, setVillage] = useState('');
   const [plotNo, setPlotNo] = useState('');
   const [plotArea, setPlotArea] = useState('');
-  const [onEast, setonEast] = useState('');
-  const [onWest, setonWest] = useState('');
-  const [onNorth, setonNorth] = useState('');
-  const [onSouth, setonSouth] = useState('');
+  const [onEast, setOnEast] = useState('');
+  const [onWest, setOnWest] = useState('');
+  const [onNorth, setOnNorth] = useState('');
+  const [onSouth, setOnSouth] = useState('');
   const [conveyanceDeed, setConveyanceDeed] = useState('');
   const [nonAgriculturalTax, setNonAgriculturalTax] = useState('');
-  const [naTaxPremiumRs, setNaTaxPremiumRs] = useState('');
+  const [naTaxPremium, setNaTaxPremium] = useState('');
   const [propertyTaxAuthority, setPropertyTaxAuthority] = useState('');
   const [propertyTaxNo, setPropertyTaxNo] = useState('');
   const [propertyTaxPremiumGSTINBills, setPropertyTaxPremiumGSTINBills] = useState('');
@@ -92,7 +93,8 @@ const Updateproperty = () => {
 
 // Fetch data when component mounts
 useEffect(() => {
-  fetchData();
+  fetchData('PropertyStructure');
+  fetchData('SocietyStructure');
   fetchOptions('LandAuthority', setLandAuthorityOptions);
   fetchOptions('WaterSupplyAuthority', setWaterSupplyAuthorityOptions);
   fetchOptions('ElectricitySupply', setElectricitySupplyServiceProviderOptions);
@@ -109,64 +111,45 @@ useEffect(() => {
   const handlePdfChange = (e) => {
     setPdfFile(e.target.files[0]);
   };
-  // handle form submission (dummy function for now)
-  const handleFilter = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    toast.success('Form submitted successfully!');
-  };
   // Function to close the form
   const closeForm = () => {
     setShowStructure(false);
     setShowForm(false);
   };
 
-
-
-  // Reset form fields
-  const resetForm = () => {
-    setLandAuthority('');
-    setLeaseDeedExecuted('');
-    setLeasePeriod('');
-    setLeaseRentPremiumRs('');
-    setCtsNo('');
-    setVillage('');
-    setPlotNo('');
-    setPlotArea('');
-    setonEast('');
-    setonWest('');
-    setonNorth('');
-    setonSouth('');
-    setPropertyTaxPremiumGSTINBills('');
-    setWaterBillGenerationDatesGSTINBills('');
-    setElectricitySupplyServiceProvider('');
-    setElectricityBillGenerationDatesGSTINBills('');
-    setEditIndex(null); // Reset the edit index
-  };
-
- 
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchData = async (tableName) => {
+    setLoading(true); // Set loading state to true
+    setError(null);   // Reset any previous errors
+  
     try {
-      const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Get/gettable.php?Table=PropertyStructure', {
+      // API call to fetch data for the specific table
+      const response = await fetch(`https://weaveitapp.microtechsolutions.co.in/api/housing/Get/gettable.php?Table=${tableName}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',  // Replace with your actual API key
         },
       });
-
+  
+      // Check if the response is okay (status code 200-299)
       if (!response.ok) throw new Error('Network response was not ok');
-
+  
+      // Parse the JSON data from the response
       const data = await response.json();
-      setTableData(data); // Store fetched data in state
+  
+      // Dynamically set the data based on the table name
+      if (tableName === 'PropertyStructure') {
+        setTableData(data);  // Update tableData for the first table
+      } else if (tableName === 'SocietyStructure') {
+        setPropertyData(data);  // Update propertyData for the second table
+      }
     } catch (error) {
-      setError('Failed to load data');
+      setError('Failed to load data: ' + error.message);  // Set error message
     } finally {
-      setLoading(false);
+      setLoading(false);  // Set loading state to false after the fetch completes
     }
   };
+  
  // Handle form submission (Save or Update)
  const handleSaveStructure = async (e) => {
   e.preventDefault();
@@ -196,7 +179,7 @@ useEffect(() => {
 
     toast.success('Structure saved successfully!');
     setShowStructure(false); // Close the form after saving
-    fetchData(); // Refresh the data after saving
+    fetchData('PropertyStructure'); // Refresh the data after saving
 
   } catch (error) {
     toast.error('Error: ' + error.message);
@@ -266,7 +249,7 @@ const handleUpdateStructure = async (e) => {
 
     setShowStructure(false);
     setSelectedId(null); // Clear selectedId after update
-    fetchData(); // Refresh data after updating
+    fetchData('PropertyStructure'); // Refresh data after updating
   } catch (error) {
     console.error('Update error:', error);
     toast.error('Error: ' + error.message);
@@ -312,7 +295,7 @@ const handleStructureDelete = async (index) => {
       throw new Error('Unexpected response');
     }
 
-    fetchData(); // Refresh data after deletion
+    fetchData('PropertyStructure'); // Refresh data after deletion
   } catch (error) {
     toast.error('Error: ' + error.message);
   }
@@ -344,6 +327,7 @@ const resetStructureForm = () => {
             variant="contained"
             color="primary"
             onClick={() => handleStructureEdit(row.index)}
+            style={{ marginRight: '10px' }}
           >
             Edit
           </Button>
@@ -358,7 +342,296 @@ const resetStructureForm = () => {
       ),
     },
   ];
-
+  const handleSave = async (e) => {
+    e.preventDefault();
+  
+    // Ensure numeric values are treated as numbers
+    const formData = new URLSearchParams();
+    formData.append('LandAuthorityId', landAuthority);
+    formData.append('LeaseDeedExecuted', leaseDeedExecuted);
+    formData.append('RegistrationNo', registrationNo);
+    formData.append('RegistrationDate', registrationDate);
+    formData.append('LeasePeriod', leasePeriod);
+    formData.append('LeaseRent', parseFloat(leaseRent) || 0);
+    formData.append('CTSNo', ctsNo);
+    formData.append('Village', village);
+    formData.append('PlotNo', plotNo);
+    formData.append('PlotArea', parseFloat(plotArea) || 0);
+    formData.append('OnEast', onEast);
+    formData.append('OnWest', onWest);
+    formData.append('OnNorth', onNorth);
+    formData.append('OnSouth', onSouth);
+    formData.append('ConveyanceDeed', conveyanceDeed);
+    formData.append('NonAgriculturalTax', parseFloat(nonAgriculturalTax) || 0);
+    formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
+    formData.append('TaxAuthorityId', propertyTaxAuthority);
+    formData.append('PropertyTaxNo', propertyTaxNo);
+    formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
+    formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
+    formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
+    formData.append('WaterConnectionNo', waterConnectionNo);
+    formData.append('WaterBillGenerationDatesGSTINBills', parseFloat(waterBillGenerationDatesGSTINBills) || 0);
+    formData.append('ElectricitySupplyServiceProviderId', electricitySupplyServiceProvider);
+    formData.append('ElectricityConnectionNo', parseInt(electricityConnectionNo, 10) || 0);
+  
+    console.log('Form Data:', formData.toString());
+  
+    try {
+      const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Post/postsocietystructure.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText); // Log error message
+        throw new Error('Request failed');
+      }
+  
+      const result = await response.json();
+      console.log('Save result:', result);
+  
+      toast.success('Property saved successfully!');
+      setShowForm(false);
+      fetchData('SocietyStructure'); // Refresh the data after saving
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error: ' + error.message);
+    }
+  
+    resetForm(); // Reset the form
+  };
+  
+  
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+  
+    // Ensure numeric values are treated as numbers
+    const formData = new URLSearchParams();
+    formData.append('Id', editIndex); // Include the Id for updating
+    formData.append('LandAuthorityId', landAuthority);
+    formData.append('LeaseDeedExecuted', leaseDeedExecuted);
+    formData.append('RegistrationNo', registrationNo);
+    formData.append('RegistrationDate', registrationDate);
+    formData.append('LeasePeriod', leasePeriod);
+    formData.append('LeaseRent', parseFloat(leaseRent) || 0);
+    formData.append('CTSNo', ctsNo);
+    formData.append('Village', village);
+    formData.append('PlotNo', plotNo);
+    formData.append('PlotArea', parseFloat(plotArea) || 0);
+    formData.append('OnEast', onEast);
+    formData.append('OnWest', onWest);
+    formData.append('OnNorth', onNorth);
+    formData.append('OnSouth', onSouth);
+    formData.append('ConveyanceDeed', conveyanceDeed);
+    formData.append('NonAgriculturalTax', parseFloat(nonAgriculturalTax) || 0);
+    formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
+    formData.append('TaxAuthorityId', propertyTaxAuthority);
+    formData.append('PropertyTaxNo', propertyTaxNo);
+    formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
+    formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
+    formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
+    formData.append('WaterConnectionNo', waterConnectionNo);
+    formData.append('WaterBillGenerationDatesGSTINBills', parseFloat(waterBillGenerationDatesGSTINBills) || 0);
+    formData.append('ElectricitySupplyServiceProviderId', electricitySupplyServiceProvider);
+    formData.append('ElectricityConnectionNo', parseInt(electricityConnectionNo, 10) || 0);
+  
+    console.log('Form Data for Update:', formData.toString());
+  
+    try {
+      const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatesocietystructure.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText); // Log error message
+        throw new Error('Request failed');
+      }
+  
+      const result = await response.json();
+      console.log('Update result:', result);
+  
+      toast.success('Property updated successfully!');
+      setShowForm(false);
+      fetchData('SocietyStructure'); // Refresh the data after updating
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error: ' + error.message);
+    }
+  
+    resetForm(); // Reset the form after update
+  };
+  
+  
+  const resetForm = () => {
+    // Reset the form fields to their default states
+    setLandAuthority('');
+    setLeaseDeedExecuted('');
+    setRegistrationNo('');
+    setRegistrationDate('');
+    setLeasePeriod('');
+    setLeaseRent('');
+    setCtsNo('');
+    setVillage('');
+    setPlotNo('');
+    setPlotArea('');
+    setOnEast('');
+    setOnWest('');
+    setOnNorth('');
+    setOnSouth('');
+    setConveyanceDeed('');
+    setNonAgriculturalTax('');
+    setNaTaxPremium('');
+    setPropertyTaxAuthority('');
+    setPropertyTaxNo('');
+    setPropertyTaxPremiumGSTINBills('');
+    setWaterSupplyAuthority('');
+    setNoOfWaterConnections('');
+    setWaterConnectionNo('');
+    setWaterBillGenerationDatesGSTINBills('');
+    setElectricitySupplyServiceProvider('');
+    setElectricityConnectionNo('');
+    
+    setEditIndex(null); // Reset edit mode
+    setShowForm(false); // Close the form (if needed)
+  };
+  
+  
+  
+  const handleDelete = async (index) => {
+    const id = propertyData[index].Id; // Get the ID of the selected record from propertyData
+    setLoading(true); // Start loading
+    setError(null); // Reset any previous errors
+  
+    try {
+      // Perform the DELETE request
+      const response = await fetch(
+        `https://weaveitapp.microtechsolutions.co.in/api/housing/Delete/delrecord.php?Id=${id}&Table=SocietyStructure`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+          },
+        }
+      );
+  
+      // Check if the response is ok
+      if (!response.ok) {
+        throw new Error('Failed to delete data');
+      }
+  
+      // Assuming the API returns a message "Value Deleted" on success
+      const result = await response.text();
+      if (result === 'Value Deleted') {
+        toast.success('Property deleted successfully!');
+        fetchData('SocietyStructure');// Refresh the data after deletion
+      } else {
+        throw new Error('Unexpected response');
+      }
+    } catch (error) {
+      toast.error('Error: ' + error.message); // Show error if something goes wrong
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+  const handleEdit = (index) => {
+    const property = propertyData[index]; // Get the selected property based on the index
+    if (!property) {
+      console.log("No property found at index:", index); // Debugging step
+      return;
+    }
+  
+    console.log("Editing property:", property); // Debugging step
+    
+    setEditIndex(index); // Set the index for editing
+  
+    // Set the form fields with the selected property's data
+    setLandAuthority(property.LandAuthorityId);
+    setLeaseDeedExecuted(property.LeaseDeedExecuted === 1 ? 'Yes' : 'No');
+    setRegistrationNo(property.RegistrationNo);
+    setRegistrationDate(property.RegistrationDate);
+    setLeasePeriod(property.LeasePeriod);
+    setLeaseRent(property.LeaseRent);
+    setCtsNo(property.CTSNo);
+    setVillage(property.Village);
+    setPlotNo(property.PlotNo);
+    setPlotArea(property.PlotArea);
+    setOnEast(property.OnEast);
+    setOnWest(property.OnWest);
+    setOnNorth(property.OnNorth);
+    setOnSouth(property.OnSouth);
+    setConveyanceDeed(property.ConveyanceDeed === 1 ? 'Yes' : 'No');
+    setNonAgriculturalTax(property.NonAgriculturalTax);
+    setNaTaxPremium(property.NATaxPremium);
+    setPropertyTaxAuthority(property.PropertyTaxAuthorityId);
+    setPropertyTaxNo(property.PropertyTaxNo);
+    setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremiumGSTINBills);
+    setWaterSupplyAuthority(property.WaterSupplyAuthorityId);
+    setNoOfWaterConnections(property.NoOfWaterConnections);
+    setWaterConnectionNo(property.WaterConnectionNo);
+    setWaterBillGenerationDatesGSTINBills(property.WaterBillGenerationDatesGSTINBills);
+    setElectricitySupplyServiceProvider(property.ElectricitySupplyServiceProviderId);
+    setElectricityConnectionNo(property.ElectricityConnectionNo);
+  
+    setShowForm(true); // Show the form after setting the data
+  };
+  
+ const pcolumns=[
+  { accessorKey: 'Id', header: 'Id' },
+  { accessorKey: 'LandAuthorityId', header: 'Land Authority' },
+  { accessorKey: 'LeaseDeedExecuted', header: 'Lease Executed'},
+  { accessorKey: 'LeasePeriod', header: 'Lease Period' },
+  { accessorKey: 'LeaseRent', header: 'Lease Rent Premium (Rs)' },
+  { accessorKey: 'CTSNo', header: 'CTS No.' },
+  { accessorKey: 'Village', header: 'Village' },
+  { accessorKey: 'PlotNo', header: 'Plot No.' },
+  { accessorKey: 'PlotArea', header: 'Plot Area' },
+  { accessorKey: 'OnEast', header: 'Boundary East' },
+  { accessorKey: 'OnWest', header: 'Boundary West' },
+  { accessorKey: 'OnNorth', header: 'Boundary North' },
+  { accessorKey: 'OnSouth', header: 'Boundary South' },
+  { accessorKey: 'NATaxPremium', header: 'NA Tax Premium' },
+  { accessorKey: 'WaterSupplyAuthorityId', header: 'Water Supply Authority Id' },
+  { accessorKey: 'NoOfWaterConnections', header: 'No Of Water Connections' },
+  { accessorKey: 'ElectricitySupplyServiceProviderId',header: 'Electrical Supplier Id' },
+  { accessorKey: 'ElectricityConnectionNo', header: 'No Of Electricity Connections' },
+  { accessorKey: 'WaterConnectionNo', header: 'Water Connection No' },
+  { accessorKey: 'WaterBillGenerationDatesGSTINBills', header: 'Water Bill Generation Dates', cell: info => format(new Date(info.getValue()), 'yyyy-MM-dd') },
+   {
+     accessorKey: 'actions',
+     header: 'Actions',
+     Cell: ({ row }) => (
+       <div>
+         <Button
+           variant="contained"
+           color="primary"
+           onClick={() => handleEdit(row.index)}
+           style={{ marginRight: '10px' }}
+         >
+           Edit
+         </Button>
+         <Button
+           variant="contained"
+           color="secondary"
+           onClick={() => handleDelete(row.index)}
+         >
+           Delete
+         </Button>
+       </div>
+     ),
+   },
+ ];
   return (
     <div className="structure-container">
       {!showForm && !showStructure && (
@@ -388,7 +661,7 @@ const resetStructureForm = () => {
       <ToastContainer />
       {showStructure && (
       <form onSubmit={selectedId ? handleUpdateStructure : handleSaveStructure} className="structure-form">
-           <h3>{selectedId ? 'Edit Structure Details' : 'New Structure Details'}</h3>
+           <h3>{selectedId ? 'Edit Structure Details' : ' Structure Details'}</h3>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={8}>
               <div className="input-group">
@@ -481,8 +754,8 @@ const resetStructureForm = () => {
       )}
 {/* property details form */}
 {showForm && (
-        <form  className="property-form">
-          <h3 style={{ textAlign: 'center', marginBottom: '30px', marginTop: '0px' }}>Property Details</h3>
+        <form  onSubmit={editIndex !== null ? handleUpdate : handleSave} className="property-form">
+       <h3>{editIndex ? 'Edit Property Details' : ' Property Details'}</h3>
           <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
           <div className="input-group">
@@ -499,7 +772,7 @@ const resetStructureForm = () => {
             <MenuItem value="">{error}</MenuItem>
           ) : (
             landAuthorityOptions.map((option, index) => (
-              <MenuItem key={index} value={option.Id}>{option.AuthorityName}</MenuItem>
+              <MenuItem key={index} value={option.AuthorityName}>{option.AuthorityName}</MenuItem>
             ))
           )}
         </Select>
@@ -590,8 +863,8 @@ const resetStructureForm = () => {
                 <label>Lease Rent Premium Rs</label>
                 <TextField
                   size="small"
-                  value={leaseRentPremiumRs}
-                  onChange={(e) => setLeaseRentPremiumRs(e.target.value)}
+                  value={leaseRent}
+                  onChange={(e) => setLeaseRent(e.target.value)}
                 />
               </div>
             </Grid>
@@ -644,7 +917,7 @@ const resetStructureForm = () => {
                   <TextField
                     size="small"
                     value={onEast}
-                    onChange={(e) => setonEast(e.target.value )}
+                    onChange={(e) => setOnEast(e.target.value )}
                   />
                   </div>
                   </Grid>
@@ -654,7 +927,7 @@ const resetStructureForm = () => {
                   <TextField
                     size="small"
                     value={onWest}
-                    onChange={(e) =>setonWest(e.target.value )}
+                    onChange={(e) =>setOnWest(e.target.value )}
                   />
                   </div>
                   </Grid>
@@ -664,7 +937,7 @@ const resetStructureForm = () => {
                   <TextField
                     size="small"
                     value={onNorth}
-                    onChange={(e) =>setonNorth(e.target.value )}
+                    onChange={(e) =>setOnNorth(e.target.value )}
                   />
                   </div>
                   </Grid>
@@ -674,7 +947,7 @@ const resetStructureForm = () => {
                   <TextField
                     size="small"
                     value={onSouth}
-                    onChange={(e) => setonSouth(e.target.value )}
+                    onChange={(e) => setOnSouth(e.target.value )}
                   />
                 </div>
                 </Grid>
@@ -758,8 +1031,8 @@ const resetStructureForm = () => {
                 <label>NA Tax Premium Rs</label>
                 <TextField
                   size="small"
-                  value={naTaxPremiumRs}
-                  onChange={(e) => setNaTaxPremiumRs(e.target.value)}
+                  value={naTaxPremium}
+                  onChange={(e) => setNaTaxPremium(e.target.value)}
                 />
               </div>
             </Grid>
@@ -778,7 +1051,7 @@ const resetStructureForm = () => {
             <MenuItem value="">{error}</MenuItem>
           ) : (
             propertyTaxAuthorityOptions.map((option, index) => (
-              <MenuItem key={index} value={option.Id}>{option.AuthorityName}</MenuItem>
+              <MenuItem key={index} value={option.AuthorityName}>{option.AuthorityName}</MenuItem>
             ))
           )}
         </Select>
@@ -822,7 +1095,7 @@ const resetStructureForm = () => {
             <MenuItem value="">{error}</MenuItem>
           ) : (
             waterSupplyAuthorityOptions.map((option, index) => (
-              <MenuItem key={index} value={option.Id}>{option.AuthorityName}</MenuItem>
+              <MenuItem key={index} value={option.AuthorityName}>{option.AuthorityName}</MenuItem>
             ))
           )}
         </Select>
@@ -855,6 +1128,7 @@ const resetStructureForm = () => {
               <div className="input-group">
                 <label>Water Bill Generation Dates</label>
                 <TextField
+                type='date'
                   size="small"
                   value={waterBillGenerationDatesGSTINBills}
                   onChange={(e) => setWaterBillGenerationDatesGSTINBills(e.target.value)}
@@ -876,7 +1150,7 @@ const resetStructureForm = () => {
             <MenuItem value="">{error}</MenuItem>
           ) : (
             electricitySupplyServiceProviderOptions.map((option, index) => (
-              <MenuItem key={index} value={option.Id}>{option.SupplierName}</MenuItem>
+              <MenuItem key={index} value={option.SupplierName}>{option.SupplierName}</MenuItem>
             ))
           )}
         </Select>
@@ -892,35 +1166,14 @@ const resetStructureForm = () => {
                 />
               </div>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <div className="input-group">
-                <label> Water Connection No </label>
-                <TextField
-                  size="small"
-                  value={waterConnectionNo}
-                  onChange={(e) => setWaterConnectionNo(e.target.value)}
-                />
-              </div>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <div className="input-group">
-                <label>Water Bill Generation Dates GSTIN Bills</label>
-                <TextField
-                  size="small"
-                  value={waterBillGenerationDatesGSTINBills}
-                  onChange={(e) => setWaterBillGenerationDatesGSTINBills(e.target.value)}
-                />
-              </div>
-            </Grid>
           </Grid>
           <div className="button-group-bottom">
           <button
-              type="button"
-              className="submit"
-              // onClick={editIndex === null ? handleSave : handleUpdate}
-            >
-              {/* {editIndex === null ? 'Save' : 'Update'} */}
-            </button>
+    type="submit"  // Change button type to submit
+    className="submit"
+  >
+    {editIndex !== null ? 'Update' : 'Save'}
+  </button>
             <button type="button" onClick={closeForm} className="cancel">Close</button>
           </div>
         </form>
@@ -942,50 +1195,9 @@ const resetStructureForm = () => {
 )}
 {!showForm && !showStructure && (
    <Paper style={{ marginTop: '20px', padding: '10px', maxWidth: '1000px', margin: '0 auto' }}>
-        <MaterialReactTable
-          columns={[
-            { accessorKey: 'srNo', header: 'SR No.' },
-            { accessorKey: 'landAuthority', header: 'Land Authority' },
-            { accessorKey: 'leaseDeedExecuted', header: 'Lease Deed Executed' },
-            { accessorKey: 'leasePeriod', header: 'Lease Period' },
-            { accessorKey: 'leaseRentPremiumRs', header: 'Lease Rent Premium (Rs)' },
-            { accessorKey: 'ctsNo', header: 'CTS No.' },
-            { accessorKey: 'village', header: 'Village' },
-            { accessorKey: 'plotNo', header: 'Plot No.' },
-            { accessorKey: 'plotArea', header: 'Plot Area' },
-            { accessorKey: 'onEast', header: 'Boundary East' },
-            { accessorKey: 'onWest', header: 'Boundary West' },
-            { accessorKey: 'onNorth', header: 'Boundary North' },
-            { accessorKey: 'onSouth', header: 'Boundary South' },
-            { accessorKey: 'propertyTaxPremiumGSTINBills', header: 'Property Tax Premium GSTIN Bills' },
-            { accessorKey: 'waterBillGenerationDatesGSTINBills', header: 'Water Bill Generation Dates' },
-            { accessorKey: 'electricitySupplyServiceProvider', header: 'Electricity Supply Service Provider' },
-            { accessorKey: 'electricityBillGenerationDatesGSTINBills', header: 'Electricity Bill Generation Dates' },
-            {
-              accessorKey: 'actions',
-              header: 'Actions',
-              Cell: ({ row }) => (
-                <div>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    // onClick={() => handleEdit(row.index)}
-                    style={{ marginRight: '10px' }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    // onClick={() => handleDelete(row.index)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              ),
-            },
-          ]}
-          data={propertyData} // Make sure this is correctly bound to the state
+       <MaterialReactTable
+          columns={pcolumns}
+          data={propertyData} // Make sure this is correctly bound to the state      
           muiTableHeadCellProps={{
             style: {
               backgroundColor: '#E9ECEF',
