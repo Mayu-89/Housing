@@ -116,7 +116,7 @@ useEffect(() => {
     setShowStructure(false);
     setShowForm(false);
   };
-
+  
   const fetchData = async (tableName) => {
     setLoading(true); // Set loading state to true
     setError(null);   // Reset any previous errors
@@ -348,7 +348,7 @@ const resetStructureForm = () => {
     // Ensure numeric values are treated as numbers
     const formData = new URLSearchParams();
     formData.append('LandAuthorityId', landAuthority);
-    formData.append('LeaseDeedExecuted', leaseDeedExecuted);
+    formData.append('IsLeaseDeed', leaseDeedExecuted);
     formData.append('RegistrationNo', registrationNo);
     formData.append('RegistrationDate', registrationDate);
     formData.append('LeasePeriod', leasePeriod);
@@ -361,18 +361,23 @@ const resetStructureForm = () => {
     formData.append('OnWest', onWest);
     formData.append('OnNorth', onNorth);
     formData.append('OnSouth', onSouth);
-    formData.append('ConveyanceDeed', conveyanceDeed);
-    formData.append('NonAgriculturalTax', parseFloat(nonAgriculturalTax) || 0);
+    formData.append('IsConveyanceDeed', conveyanceDeed);
+    formData.append('CRegistrationNo', cregistrationNo);
+    formData.append('CRegistrationDate', cregistrationDate);
+   formData.append('ConveyanceName', landConveyanceName);
+    formData.append('IsNATax', parseFloat(nonAgriculturalTax) || 0);
     formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
     formData.append('TaxAuthorityId', propertyTaxAuthority);
     formData.append('PropertyTaxNo', propertyTaxNo);
     formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
+  // formData.append('IsGSTBill', propertyTaxNo);
     formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
     formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
     formData.append('WaterConnectionNo', waterConnectionNo);
-    formData.append('WaterBillGenerationDatesGSTINBills', parseFloat(waterBillGenerationDatesGSTINBills) || 0);
-    formData.append('ElectricitySupplyServiceProviderId', electricitySupplyServiceProvider);
-    formData.append('ElectricityConnectionNo', parseInt(electricityConnectionNo, 10) || 0);
+    formData.append('WaterBillGenerationDate',waterBillGenerationDatesGSTINBills);
+    formData.append('ElectricalSupplierId', electricitySupplyServiceProvider);
+    formData.append('NoOfElectricityConnections', parseInt(electricityConnectionNo, 10) || 0);
+  // formData.append('IsWaterGSTBill', propertyTaxNo);
   
     console.log('Form Data:', formData.toString());
   
@@ -410,60 +415,59 @@ const resetStructureForm = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
   
-    // Ensure numeric values are treated as numbers
     const formData = new URLSearchParams();
-    formData.append('Id', editIndex); // Include the Id for updating
+    formData.append('Id', editIndex);
     formData.append('LandAuthorityId', landAuthority);
-    formData.append('LeaseDeedExecuted', leaseDeedExecuted);
-    formData.append('RegistrationNo', registrationNo);
-    formData.append('RegistrationDate', registrationDate);
-    formData.append('LeasePeriod', leasePeriod);
-    formData.append('LeaseRent', parseFloat(leaseRent) || 0);
-    formData.append('CTSNo', ctsNo);
-    formData.append('Village', village);
-    formData.append('PlotNo', plotNo);
-    formData.append('PlotArea', parseFloat(plotArea) || 0);
-    formData.append('OnEast', onEast);
-    formData.append('OnWest', onWest);
-    formData.append('OnNorth', onNorth);
-    formData.append('OnSouth', onSouth);
-    formData.append('ConveyanceDeed', conveyanceDeed);
-    formData.append('NonAgriculturalTax', parseFloat(nonAgriculturalTax) || 0);
-    formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
-    formData.append('TaxAuthorityId', propertyTaxAuthority);
-    formData.append('PropertyTaxNo', propertyTaxNo);
-    formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
-    formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
-    formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
-    formData.append('WaterConnectionNo', waterConnectionNo);
-    formData.append('WaterBillGenerationDatesGSTINBills', parseFloat(waterBillGenerationDatesGSTINBills) || 0);
-    formData.append('ElectricitySupplyServiceProviderId', electricitySupplyServiceProvider);
-    formData.append('ElectricityConnectionNo', parseInt(electricityConnectionNo, 10) || 0);
-  
-    console.log('Form Data for Update:', formData.toString());
+      formData.append('IsLeaseDeed', leaseDeedExecuted);
+      formData.append('RegistrationNo', registrationNo);
+      formData.append('RegistrationDate', registrationDate);
+      formData.append('LeasePeriod', leasePeriod);
+      formData.append('LeaseRent', parseFloat(leaseRent) || 0);
+      formData.append('CTSNo', ctsNo);
+      formData.append('Village', village);
+      formData.append('PlotNo', plotNo);
+      formData.append('PlotArea', parseFloat(plotArea) || 0);
+      formData.append('OnEast', onEast);
+      formData.append('OnWest', onWest);
+      formData.append('OnNorth', onNorth);
+      formData.append('OnSouth', onSouth);
+      formData.append('IsConveyanceDeed', conveyanceDeed);
+      formData.append('CRegistrationNo', cregistrationNo);
+      formData.append('CRegistrationDate', cregistrationDate);
+     formData.append('ConveyanceName', landConveyanceName);
+      formData.append('IsNATax', parseFloat(nonAgriculturalTax) || 0);
+      formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
+      formData.append('TaxAuthorityId', propertyTaxAuthority);
+      formData.append('PropertyTaxNo', propertyTaxNo);
+      formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
+    // formData.append('IsGSTBill', propertyTaxNo);
+      formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
+      formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
+      formData.append('WaterConnectionNo', waterConnectionNo);
+      formData.append('WaterBillGenerationDate',waterBillGenerationDatesGSTINBills);
+      formData.append('ElectricalSupplierId', electricitySupplyServiceProvider);
+      formData.append('NoOfElectricityConnections', parseInt(electricityConnectionNo, 10) || 0);
+    // formData.append('IsWaterGSTBill', propertyTaxNo);
   
     try {
-      const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatesocietystructure.php', {
+     const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatesocietystructure.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+        'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
         },
         body: formData,
       });
   
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText); // Log error message
-        throw new Error('Request failed');
+      const result = await response.json(); // This will parse the JSON response
+  
+      if (result.error) {
+        toast.error('Error: ' + result.error); // Handle error case
+      } else if (result.message) {
+        toast.success(result.message); // Handle success case
+        setShowForm(false);
+        fetchData('SocietyStructure'); // Refresh data after update
       }
-  
-      const result = await response.json();
-      console.log('Update result:', result);
-  
-      toast.success('Property updated successfully!');
-      setShowForm(false);
-      fetchData('SocietyStructure'); // Refresh the data after updating
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error: ' + error.message);
@@ -471,6 +475,7 @@ const resetStructureForm = () => {
   
     resetForm(); // Reset the form after update
   };
+  
   
   
   const resetForm = () => {
@@ -558,7 +563,7 @@ const resetStructureForm = () => {
   
     // Set the form fields with the selected property's data
     setLandAuthority(property.LandAuthorityId);
-    setLeaseDeedExecuted(property.LeaseDeedExecuted === 1 ? 'Yes' : 'No');
+    setLeaseDeedExecuted(property.IsLeaseDeed === 1 ? 'Yes' : 'No');
     setRegistrationNo(property.RegistrationNo);
     setRegistrationDate(property.RegistrationDate);
     setLeasePeriod(property.LeasePeriod);
@@ -571,18 +576,21 @@ const resetStructureForm = () => {
     setOnWest(property.OnWest);
     setOnNorth(property.OnNorth);
     setOnSouth(property.OnSouth);
-    setConveyanceDeed(property.ConveyanceDeed === 1 ? 'Yes' : 'No');
-    setNonAgriculturalTax(property.NonAgriculturalTax);
+    setConveyanceDeed(property.IsConveyanceDeed === 1 ? 'Yes' : 'No');
+    setLandConveyanceName(property.landConveyanceName);
+    setcRegistrationNo(property.cregistrationNo);
+    setcRegistrationDate(property.cregistrationDate);
+    setNonAgriculturalTax(property.IsNATax);
     setNaTaxPremium(property.NATaxPremium);
-    setPropertyTaxAuthority(property.PropertyTaxAuthorityId);
+    setPropertyTaxAuthority(property.TaxAuthorityId);
     setPropertyTaxNo(property.PropertyTaxNo);
-    setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremiumGSTINBills);
+    setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremium  === 1 ? 'Yes' : 'No');
     setWaterSupplyAuthority(property.WaterSupplyAuthorityId);
     setNoOfWaterConnections(property.NoOfWaterConnections);
     setWaterConnectionNo(property.WaterConnectionNo);
-    setWaterBillGenerationDatesGSTINBills(property.WaterBillGenerationDatesGSTINBills);
-    setElectricitySupplyServiceProvider(property.ElectricitySupplyServiceProviderId);
-    setElectricityConnectionNo(property.ElectricityConnectionNo);
+    setWaterBillGenerationDatesGSTINBills(property.WaterBillGenerationDate);
+    setElectricitySupplyServiceProvider(property.ElectricalSupplierId);
+    setElectricityConnectionNo(property.NoOfElectricityConnections);
   
     setShowForm(true); // Show the form after setting the data
   };
@@ -590,7 +598,7 @@ const resetStructureForm = () => {
  const pcolumns=[
   { accessorKey: 'Id', header: 'Id' },
   { accessorKey: 'LandAuthorityId', header: 'Land Authority' },
-  { accessorKey: 'LeaseDeedExecuted', header: 'Lease Executed'},
+  // { accessorKey: 'IsLeaseDeed', header: 'Lease Executed'},
   { accessorKey: 'LeasePeriod', header: 'Lease Period' },
   { accessorKey: 'LeaseRent', header: 'Lease Rent Premium (Rs)' },
   { accessorKey: 'CTSNo', header: 'CTS No.' },
@@ -604,10 +612,10 @@ const resetStructureForm = () => {
   { accessorKey: 'NATaxPremium', header: 'NA Tax Premium' },
   { accessorKey: 'WaterSupplyAuthorityId', header: 'Water Supply Authority Id' },
   { accessorKey: 'NoOfWaterConnections', header: 'No Of Water Connections' },
-  { accessorKey: 'ElectricitySupplyServiceProviderId',header: 'Electrical Supplier Id' },
-  { accessorKey: 'ElectricityConnectionNo', header: 'No Of Electricity Connections' },
+  { accessorKey: 'ElectricalSupplierId',header: 'Electrical Supplier Id' },
+  { accessorKey: 'NoOfElectricityConnections', header: 'No Of Electricity Connections' },
   { accessorKey: 'WaterConnectionNo', header: 'Water Connection No' },
-  { accessorKey: 'WaterBillGenerationDatesGSTINBills', header: 'Water Bill Generation Dates', cell: info => format(new Date(info.getValue()), 'yyyy-MM-dd') },
+  { accessorKey: 'WaterBillGenerationDate', header: 'Water Bill Generation Dates' },
    {
      accessorKey: 'actions',
      header: 'Actions',
