@@ -344,11 +344,14 @@ const resetStructureForm = () => {
   ];
   const handleSave = async (e) => {
     e.preventDefault();
-  
+  // Convert leaseDeedExecuted value to 1 for 'Yes', 0 for 'No'
+  const isLeaseDeedvalue = leaseDeedExecuted === 'Yes' ? 1 : (leaseDeedExecuted === 'No' ? 0 : null);
+  const isConveyanceDeedvalue = conveyanceDeed ==='Yes' ? 1:(conveyanceDeed === 'No' ? 0 :null);
+  const propertyTaxPremiumvalue = propertyTaxPremiumGSTINBills ==='Yes' ? 1:(propertyTaxPremiumGSTINBills === 'No' ? 0 :null);
     // Ensure numeric values are treated as numbers
     const formData = new URLSearchParams();
     formData.append('LandAuthorityId', landAuthority);
-    formData.append('IsLeaseDeed', leaseDeedExecuted);
+    formData.append('IsLeaseDeed', isConveyanceDeedvalue);
     formData.append('RegistrationNo', registrationNo);
     formData.append('RegistrationDate', registrationDate);
     formData.append('LeasePeriod', leasePeriod);
@@ -361,7 +364,7 @@ const resetStructureForm = () => {
     formData.append('OnWest', onWest);
     formData.append('OnNorth', onNorth);
     formData.append('OnSouth', onSouth);
-    formData.append('IsConveyanceDeed', conveyanceDeed);
+    formData.append('IsConveyanceDeed', isConveyanceDeedvalue);
     formData.append('CRegistrationNo', cregistrationNo);
     formData.append('CRegistrationDate', cregistrationDate);
    formData.append('ConveyanceName', landConveyanceName);
@@ -369,7 +372,7 @@ const resetStructureForm = () => {
     formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
     formData.append('TaxAuthorityId', propertyTaxAuthority);
     formData.append('PropertyTaxNo', propertyTaxNo);
-    formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
+    formData.append('PropertyTaxPremium',propertyTaxPremiumvalue);
   // formData.append('IsGSTBill', propertyTaxNo);
     formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
     formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
@@ -415,68 +418,104 @@ const resetStructureForm = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
   
+    // Ensure that editIndex is set before attempting to update
+    if (editIndex === null) {
+      toast.error('No ID selected for update.');
+      return;
+    }
+  
+    // Log the data to check what is being sent
+    console.log('Updating data with ID:', editIndex);
+  
+    // Prepare form data
     const formData = new URLSearchParams();
-    formData.append('Id', editIndex);
+    formData.append('Id', propertyData[editIndex].Id); 
     formData.append('LandAuthorityId', landAuthority);
-      formData.append('IsLeaseDeed', leaseDeedExecuted);
-      formData.append('RegistrationNo', registrationNo);
-      formData.append('RegistrationDate', registrationDate);
-      formData.append('LeasePeriod', leasePeriod);
-      formData.append('LeaseRent', parseFloat(leaseRent) || 0);
-      formData.append('CTSNo', ctsNo);
-      formData.append('Village', village);
-      formData.append('PlotNo', plotNo);
-      formData.append('PlotArea', parseFloat(plotArea) || 0);
-      formData.append('OnEast', onEast);
-      formData.append('OnWest', onWest);
-      formData.append('OnNorth', onNorth);
-      formData.append('OnSouth', onSouth);
-      formData.append('IsConveyanceDeed', conveyanceDeed);
-      formData.append('CRegistrationNo', cregistrationNo);
-      formData.append('CRegistrationDate', cregistrationDate);
-     formData.append('ConveyanceName', landConveyanceName);
-      formData.append('IsNATax', parseFloat(nonAgriculturalTax) || 0);
-      formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
-      formData.append('TaxAuthorityId', propertyTaxAuthority);
-      formData.append('PropertyTaxNo', propertyTaxNo);
-      formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
-    // formData.append('IsGSTBill', propertyTaxNo);
-      formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
-      formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
-      formData.append('WaterConnectionNo', waterConnectionNo);
-      formData.append('WaterBillGenerationDate',waterBillGenerationDatesGSTINBills);
-      formData.append('ElectricalSupplierId', electricitySupplyServiceProvider);
-      formData.append('NoOfElectricityConnections', parseInt(electricityConnectionNo, 10) || 0);
-    // formData.append('IsWaterGSTBill', propertyTaxNo);
+    formData.append('IsLeaseDeed', leaseDeedExecuted);
+    formData.append('RegistrationNo', registrationNo);
+    formData.append('RegistrationDate', registrationDate);
+    formData.append('LeasePeriod', leasePeriod);
+    formData.append('LeaseRent', parseFloat(leaseRent) || 0);
+    formData.append('CTSNo', ctsNo);
+    formData.append('Village', village);
+    formData.append('PlotNo', plotNo);
+    formData.append('PlotArea', parseFloat(plotArea) || 0);
+    formData.append('OnEast', onEast);
+    formData.append('OnWest', onWest);
+    formData.append('OnNorth', onNorth);
+    formData.append('OnSouth', onSouth);
+    formData.append('IsConveyanceDeed', conveyanceDeed);
+    formData.append('CRegistrationNo', cregistrationNo);
+    formData.append('CRegistrationDate', cregistrationDate);
+    formData.append('ConveyanceName', landConveyanceName);
+    formData.append('IsNATax', parseFloat(nonAgriculturalTax) || 0);
+    formData.append('NATaxPremium', parseFloat(naTaxPremium) || 0);
+    formData.append('TaxAuthorityId', propertyTaxAuthority);
+    formData.append('PropertyTaxNo', propertyTaxNo);
+    formData.append('PropertyTaxPremium', parseFloat(propertyTaxPremiumGSTINBills) || 0);
+    formData.append('WaterSupplyAuthorityId', waterSupplyAuthority);
+    formData.append('NoOfWaterConnections', parseInt(noOfWaterConnections, 10) || 0);
+    formData.append('WaterConnectionNo', waterConnectionNo);
+    formData.append('WaterBillGenerationDate', waterBillGenerationDatesGSTINBills);
+    formData.append('ElectricalSupplierId', electricitySupplyServiceProvider);
+    formData.append('NoOfElectricityConnections', parseInt(electricityConnectionNo, 10) || 0);
+  
+    // Log the form data to ensure it's correct before sending
+    console.log('Form Data:', formData.toString());
   
     try {
-     const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatesocietystructure.php', {
+      // Send the request to the backend API
+      const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatesocietystructure.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-        'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+          'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
         },
         body: formData,
       });
   
-      const result = await response.json(); // This will parse the JSON response
-  
-      if (result.error) {
-        toast.error('Error: ' + result.error); // Handle error case
-      } else if (result.message) {
-        toast.success(result.message); // Handle success case
-        setShowForm(false);
-        fetchData('SocietyStructure'); // Refresh data after update
+      // Check if response is successful
+      if (!response.ok) {
+        throw new Error('Request failed');
       }
+  
+      // Check content type of the response
+      const contentType = response.headers.get("Content-Type");
+  
+      let result;
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json(); // If response is JSON, parse it
+      } else {
+        result = await response.text(); // Otherwise, handle as text
+      }
+  
+      console.log('Update Result:', result);
+  
+      // Check if the result contains a success message or success flag
+      if (result.error) {
+        toast.error('Error: ' + result.error); // If there's an error message
+      } else if (result.message) {
+        toast.success(result.message); // If there's a success message
+        setShowForm(false); // Close form after successful update
+        setEditIndex(null); // Clear edit index
+        fetchData('SocietyStructure'); // Refresh data after updating
+      } else if (typeof result === 'string' && result.includes('Value Updated Successfully')) {
+        toast.success('Value Updated Successfully!');
+        setShowForm(false);
+        setEditIndex(null);
+        fetchData('SocietyStructure');
+      } else {
+        toast.error('Failed to update record');
+      }
+  
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Update error:', error);
       toast.error('Error: ' + error.message);
     }
   
-    resetForm(); // Reset the form after update
+    // Reset the form after the update
+    resetForm();
   };
-  
-  
   
   const resetForm = () => {
     // Reset the form fields to their default states
@@ -563,9 +602,16 @@ const resetStructureForm = () => {
   
     // Set the form fields with the selected property's data
     setLandAuthority(property.LandAuthorityId);
-    setLeaseDeedExecuted(property.IsLeaseDeed === 1 ? 'Yes' : 'No');
+    setLeaseDeedExecuted(property.IsLeaseDeed === 1 ? 'Yes' : (property.IsLeaseDeed === 0 ? 'No' : ''));
+
+  // Set the registration fields (RegistrationNo, RegistrationDate, cRegistrationNo, cRegistrationDate)
+  if (property.IsLeaseDeed === 1) {  // Only if 'Yes' is selected
     setRegistrationNo(property.RegistrationNo);
     setRegistrationDate(property.RegistrationDate);
+  }
+    // setLeaseDeedExecuted(property.IsLeaseDeed);
+    // setRegistrationNo(property.RegistrationNo);
+    // setRegistrationDate(property.RegistrationDate);
     setLeasePeriod(property.LeasePeriod);
     setLeaseRent(property.LeaseRent);
     setCtsNo(property.CTSNo);
@@ -576,15 +622,23 @@ const resetStructureForm = () => {
     setOnWest(property.OnWest);
     setOnNorth(property.OnNorth);
     setOnSouth(property.OnSouth);
-    setConveyanceDeed(property.IsConveyanceDeed === 1 ? 'Yes' : 'No');
+    setConveyanceDeed(property.IsConveyanceDeed === 1 ? 'Yes' : (property.IsConveyanceDeed === 0 ? 'No' : ''));
+    // setConveyanceDeed(property.IsConveyanceDeed);
     setLandConveyanceName(property.landConveyanceName);
+
+  // Set the registration fields (RegistrationNo, RegistrationDate, cRegistrationNo, cRegistrationDate)
+  if (property.IsConveyanceDeed === 1) {  // Only if 'Yes' is selected
     setcRegistrationNo(property.cregistrationNo);
     setcRegistrationDate(property.cregistrationDate);
+  }
+    // setcRegistrationNo(property.cregistrationNo);
+    // setcRegistrationDate(property.cregistrationDate);
     setNonAgriculturalTax(property.IsNATax);
     setNaTaxPremium(property.NATaxPremium);
     setPropertyTaxAuthority(property.TaxAuthorityId);
     setPropertyTaxNo(property.PropertyTaxNo);
-    setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremium  === 1 ? 'Yes' : 'No');
+    setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremium === 1 ? 'Yes' : (property.PropertyTaxPremium === 0 ? 'No' : ''));
+    // setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremium);
     setWaterSupplyAuthority(property.WaterSupplyAuthorityId);
     setNoOfWaterConnections(property.NoOfWaterConnections);
     setWaterConnectionNo(property.WaterConnectionNo);
