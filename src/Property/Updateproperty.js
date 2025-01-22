@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { Button, TextField, Grid,Select, MenuItem,Paper,Typography } from '@mui/material';
 import { MaterialReactTable } from 'material-react-table';
-import { format } from 'date-fns';
+import moment from 'moment';
 import { toast,ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
 import './updateproperty.css';
@@ -115,6 +115,8 @@ useEffect(() => {
   const closeForm = () => {
     setShowStructure(false);
     setShowForm(false);
+    resetForm();
+    resetStructureForm();
   };
   
   const fetchData = async (tableName) => {
@@ -426,7 +428,10 @@ const resetStructureForm = () => {
   
     // Log the data to check what is being sent
     console.log('Updating data with ID:', editIndex);
-  
+    const isLeaseDeedvalue = leaseDeedExecuted === 'Yes' ? 1 : (leaseDeedExecuted === 'No' ? 0 : null);
+    const isConveyanceDeedvalue = conveyanceDeed ==='Yes' ? 1:(conveyanceDeed === 'No' ? 0 :null);
+    const propertyTaxPremiumvalue = propertyTaxPremiumGSTINBills ==='Yes' ? 1:(propertyTaxPremiumGSTINBills === 'No' ? 0 :null);
+      
     // Prepare form data
     const formData = new URLSearchParams();
     formData.append('Id', propertyData[editIndex].Id); 
@@ -589,6 +594,8 @@ const resetStructureForm = () => {
       setLoading(false); // Stop loading
     }
   };
+ 
+ 
   const handleEdit = (index) => {
     const property = propertyData[index]; // Get the selected property based on the index
     if (!property) {
@@ -597,21 +604,22 @@ const resetStructureForm = () => {
     }
   
     console.log("Editing property:", property); // Debugging step
-    
+  
     setEditIndex(index); // Set the index for editing
   
     // Set the form fields with the selected property's data
     setLandAuthority(property.LandAuthorityId);
     setLeaseDeedExecuted(property.IsLeaseDeed === 1 ? 'Yes' : (property.IsLeaseDeed === 0 ? 'No' : ''));
-
-  // Set the registration fields (RegistrationNo, RegistrationDate, cRegistrationNo, cRegistrationDate)
-  if (property.IsLeaseDeed === 1) {  // Only if 'Yes' is selected
-    setRegistrationNo(property.RegistrationNo);
-    setRegistrationDate(property.RegistrationDate);
+  
+    // Handle LeaseDeed fields
+    if (property.IsLeaseDeed === 1) {  // LeaseDeed is "Yes"
+      setRegistrationNo(property.RegistrationNo);
+      setRegistrationDate(moment(property.RegistrationDate.date).format('YYYY-MM-DD'));
+  } else {  // LeaseDeed is "No"
+      setRegistrationNo('');
+      setRegistrationDate('');
   }
-    // setLeaseDeedExecuted(property.IsLeaseDeed);
-    // setRegistrationNo(property.RegistrationNo);
-    // setRegistrationDate(property.RegistrationDate);
+  
     setLeasePeriod(property.LeasePeriod);
     setLeaseRent(property.LeaseRent);
     setCtsNo(property.CTSNo);
@@ -622,23 +630,25 @@ const resetStructureForm = () => {
     setOnWest(property.OnWest);
     setOnNorth(property.OnNorth);
     setOnSouth(property.OnSouth);
+  
     setConveyanceDeed(property.IsConveyanceDeed === 1 ? 'Yes' : (property.IsConveyanceDeed === 0 ? 'No' : ''));
-    // setConveyanceDeed(property.IsConveyanceDeed);
-    setLandConveyanceName(property.landConveyanceName);
-
-  // Set the registration fields (RegistrationNo, RegistrationDate, cRegistrationNo, cRegistrationDate)
-  if (property.IsConveyanceDeed === 1) {  // Only if 'Yes' is selected
-    setcRegistrationNo(property.cregistrationNo);
-    setcRegistrationDate(property.cregistrationDate);
+  
+    // Handle ConveyanceDeed fields
+    if (property.IsConveyanceDeed === 1) {  // ConveyanceDeed is "Yes"
+      setcRegistrationNo(property.CRegistrationNo);
+      setcRegistrationDate(moment(property.CRegistrationDate.date).format('YYYY-MM-DD'));
+      setLandConveyanceName(''); // Clear LandConveyanceName when ConveyanceDeed is "Yes"
+  } else {  // ConveyanceDeed is "No"
+      setLandConveyanceName(property.ConveyanceName); // Show LandConveyanceName when "No"
+      setcRegistrationNo(''); // Clear cRegistrationNo when ConveyanceDeed is "No"
+      setcRegistrationDate(''); // Clear cRegistrationDate when ConveyanceDeed is "No"
   }
-    // setcRegistrationNo(property.cregistrationNo);
-    // setcRegistrationDate(property.cregistrationDate);
+  
     setNonAgriculturalTax(property.IsNATax);
     setNaTaxPremium(property.NATaxPremium);
     setPropertyTaxAuthority(property.TaxAuthorityId);
     setPropertyTaxNo(property.PropertyTaxNo);
     setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremium === 1 ? 'Yes' : (property.PropertyTaxPremium === 0 ? 'No' : ''));
-    // setPropertyTaxPremiumGSTINBills(property.PropertyTaxPremium);
     setWaterSupplyAuthority(property.WaterSupplyAuthorityId);
     setNoOfWaterConnections(property.NoOfWaterConnections);
     setWaterConnectionNo(property.WaterConnectionNo);
@@ -648,6 +658,7 @@ const resetStructureForm = () => {
   
     setShowForm(true); // Show the form after setting the data
   };
+  
   
  const pcolumns=[
   { accessorKey: 'Id', header: 'Id' },
