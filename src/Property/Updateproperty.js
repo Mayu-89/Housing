@@ -1253,6 +1253,7 @@ const resetStructureForm = () => {
       )}
       {!showForm && !showStructure &&  (
    <Paper style={{ marginTop: '20px', padding: '10px', maxWidth: '1000px', margin: '0 auto' }}>
+  <label style={{ fontWeight: 'bold', color: 'Green', fontSize: '18px', marginBottom: '8px' }}>Structure Details</label>
 <MaterialReactTable
           data={tableData} // Make sure this is correctly bound to the state
           columns={columns}
@@ -1268,6 +1269,7 @@ const resetStructureForm = () => {
 )}
 {!showForm && !showStructure && (
    <Paper style={{ marginTop: '20px', padding: '10px', maxWidth: '1000px', margin: '0 auto' }}>
+      <label style={{ fontWeight: 'bold', color: 'orange', fontSize: '18px', marginBottom: '8px' }}>Property Details</label>
        <MaterialReactTable
           columns={pcolumns}
           data={propertyData} // Make sure this is correctly bound to the state      
