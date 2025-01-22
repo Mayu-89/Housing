@@ -14,7 +14,7 @@ const Dashboard = () => {
         navigate('/member/membergroup');
         break;
       case 'property':
-        navigate('/property/newproperty');
+        navigate('/property/updateproperty');
         break;
       case 'society':
         navigate('/society/organization');
@@ -22,9 +22,12 @@ const Dashboard = () => {
       case 'accounts':
         navigate('/account/accountledger');
         break;
-        case 'reports':
-          navigate('/reports/cashbook');
+        case 'invoices':
+          navigate('/invoice/billinvoice');
           break;
+          case 'voucher':
+            navigate('/voucher/paymentvoucher');
+            break;
       default:
         console.log('Unknown card type');
     }
@@ -82,18 +85,18 @@ const Dashboard = () => {
     color: 'white', // Text color
     padding: '16px',
     borderRadius: '8px',
-  }} onClick={() => handleClick('reports')}>
-            <h3>Reports</h3>
-            <p>Reports details</p>
+  }} onClick={() => handleClick('invoices')}>
+            <h3>Invoices</h3>
+            <p>Invoice details</p>
           </div>
           <div className="dashcard"style={{
     backgroundColor:'plum', // Primary blue
     color: 'white', // Text color
     padding: '16px',
     borderRadius: '8px',
-  }} onClick={handleClick}>
-            <h3>Settings</h3>
-            <p>Settings</p>
+  }} onClick={()=> handleClick('voucher')}>
+            <h3>Voucher</h3>
+            <p>VoucherDetails</p>
           </div>
         </div>
       </div>
