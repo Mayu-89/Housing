@@ -122,6 +122,7 @@ import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import SignIn from './components/SignIn';
 import { createMuiTheme } from "@mui/material";
 import Membergroup from './Member/Membergroup';
+import Membernew from './Member/Membernew';
 import Document from './Documents/Document';
 import Newproperty from './Property/Newproperty';
 import Organization from './Society/Organization';
@@ -204,7 +205,8 @@ function App() {
                                     <Route path="/society" element={<Society />} />
                                     <Route path="/reports" element={<Reports />} />
                                     <Route path="/account" element={<Account />} />
-                                    <Route path="/member/membergroup" element={<Membergroup />} />
+                                    {/* <Route path="/member/membergroup" element={<Membergroup />} /> */}
+                                    <Route path="/member/membernew" element={<Membernew />} />
                                     <Route path="/member/documents" element={<Document />} />
                                     <Route path="/member/member-contribution" element={<Membercontribution />} />
                                     {/* <Route path="/property/newproperty" element={<Newproperty />} /> */}
