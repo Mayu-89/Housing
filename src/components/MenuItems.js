@@ -24,9 +24,14 @@ import { AccountCircle as AccountCircleIcon, Description as DescriptionIcon, Ass
     path: '/member',
     icon: <FaUsers />,
     submenus: [
+      // {
+      //   title: "Member Group",
+      //   path: "/member/membergroup",
+      //   icon: <FaUsers />,
+      // },
       {
-        title: "Member Group",
-        path: "/member/membergroup",
+        title: "Member New",
+        path: "/member/membernew",
         icon: <FaUsers />,
       },
       {
