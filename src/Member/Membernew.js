@@ -4,6 +4,7 @@ import './membernew.css'; // Same CSS file for consistent styling
 import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MaterialReactTable } from 'material-react-table';
+import moment from 'moment';
 
 const Membernew = () => {
     // Use separate state for each field
@@ -60,7 +61,7 @@ const Membernew = () => {
 
     const [activeTab, setActiveTab] = useState(0);
     const [showmembernew,setShowMembernew]=useState();
-    const [MemberData, setMemberData] = useState([]);
+    const [memberData, setMemberData] = useState([]);
     const [stateOptions, setStateOptions] = useState([]);
     const [countryOptions, setCountryOptions] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
@@ -93,16 +94,12 @@ const fetchOptions = async (tableName, setter) => {
   };
 
   useEffect(() => {
+    fetchData();
     fetchOptions('Statenew', setStateOptions);
      fetchOptions('Country', setCountryOptions);
   }, []);
 
-  const formatDate = (dateObject) => {
-    const date = new Date(dateObject.date.split(' ')[0]); // Extract the date portion
-    return date.toLocaleDateString(); // This will return the date in MM/DD/YYYY format, or you can format as needed
-};
-
-  const fetchData = async () => {
+const fetchData = async () => {
     try {
         const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Get/gettable.php?Table=MemberNew', {
             method: 'GET',
@@ -118,19 +115,9 @@ const fetchOptions = async (tableName, setter) => {
 
         const data = await response.json();
 
-        // Format data and correct the date
-        const formattedData = data.map(item => {
-            const { CreatedOn, UpdatedOn,DateOfAdmission, DateOfEntranceFeePayment,DateOfNomination,DateOfCessationOfMembership, ...rest } = item;
-            return {
-                ...rest,
-                DateOfAdmission:DateOfAdmission.date.split('')[0],
-                DateOfEntranceFeePayment:DateOfEntranceFeePayment.date.split('')[0],
-                DateOfNomination: DateOfNomination.date.split(' ')[0],
-                DateOfCessationOfMembership: DateOfCessationOfMembership.date.split(' ')[0], // Extract only the date portion
-            };
-        });
-
-        setMemberData(formattedData);
+        // Just pass the raw data without any formatting
+        setMemberData(data);
+        console.log(data);  // Log the response to check if it is correct
     } catch (error) {
         console.error('Error fetching data:', error);
     }
@@ -141,7 +128,101 @@ const handleSubmit = async (e) => {
 
     const formData = new URLSearchParams();
 
-    // Append form fields
+    // Append form fields, ensure checkbox values are 1 or 0
+    formData.append('PrintName', printName);
+    formData.append('MemberGroup', memberGroup);
+    formData.append('IsMember', isMember ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('IsActive', isActive ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('PositionNo', positionNo);
+    formData.append('IsBillWise', isBillwise ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('WingName', wingName);
+    formData.append('Floor', floor);
+    formData.append('UnitMember', unitMember);
+    formData.append('UnitType', unitType);
+    formData.append('ParentType', parentType);
+    formData.append('UnitArea', unitArea);
+    formData.append('UOM', uom);
+    formData.append('ConstructionCost', constructionCost);
+    formData.append('ChargesTemplate', chargesTemplate);
+    formData.append('TenantChargesTemplate', tenantChargesTemplate);
+    formData.append('SupplementaryChargesTemplate', supplementaryChargesTemplate);
+    formData.append('OwnerType', ownerType);
+    formData.append('MemberClass', memberClass);
+    formData.append('IsTenantDetails', isTenantDetails ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('IsParkingDetails', isParkingDetails ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('IsMemberCharges', isMemberCharges ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('UpdatedMemberName', updatedMemberName);
+    formData.append('MailingName', mailingName);
+    formData.append('Country', country);
+    formData.append('State', state);
+    formData.append('PIN', pin);
+    formData.append('ContactReason', contactReason);
+    formData.append('PhoneNo', phoneNo);
+    formData.append('Mobile', mobile);
+    formData.append('Email', email);
+    formData.append('IsInterest', isInterest ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('PAN', pan);
+    formData.append('GSTRegistrationOnType', gstRegistrationOnType);
+    formData.append('IsAssesseeOtherTerritory', isAssesseeOtherTerritory ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('IsEcommerce', isEcommerce ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('IsDeemedExport', isDeemedExport ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('PartyType', partyType);
+    formData.append('IsTransporter', isTransporter ? 1 : 0);  // Ensure checkbox is converted to 1 or 0
+    formData.append('DateOfAdmission', dateOfAdmission);
+    formData.append('DateOfEntranceFeePayment', dateOfEntranceFeePayment);
+    formData.append('FullName', fullName);
+    formData.append('Occupation', occupation);
+    formData.append('Age', age);
+    formData.append('NameOfNominee', nameOfNominee);
+    formData.append('DateOfNomination', dateOfNomination);
+    formData.append('DateOfCessationOfMembership', dateOfCessationOfMembership);
+    formData.append('ReasonOfCessation', reasonOfCessation);
+    formData.append('Remark', remark);
+
+    // Log form data to check it before sending
+    for (let [key, value] of formData) {
+        console.log(key + ": " + value);
+    }
+
+    try {
+        const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Post/postmembernew.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+            },
+            body: formData.toString(),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // setMemberData((prevData) => [...prevData, data]);
+            toast.success('Member added successfully!', { autoClose: 5000 });
+            fetchData(); // Reload data
+        } else {
+            const errorData = await response.json();
+            console.error('Error Response:', errorData);
+            toast.error(`Error adding member: ${errorData.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        toast.error('Error submitting form');
+    }
+
+    resetFields();  // Clear form after submission
+};
+
+
+const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    if (editingIndex === null) {
+        toast.error('No ID selected for update.');
+        return;
+      }
+
+    const formData = new URLSearchParams();
+    formData.append('Id', memberData[editingIndex].Id); // Get ID from the current data
     formData.append('PrintName', printName);
     formData.append('MemberGroup', memberGroup);
     formData.append('IsMember', isMember);
@@ -158,7 +239,7 @@ const handleSubmit = async (e) => {
     formData.append('ConstructionCost', constructionCost);
     formData.append('ChargesTemplate', chargesTemplate);
     formData.append('TenantChargesTemplate', tenantChargesTemplate);
-    formData.append('SupplementaryChargesTemplate', supplementaryChargesTemplate);
+    formData.append('SupplementryChargesTemplate', supplementaryChargesTemplate);
     formData.append('OwnerType', ownerType);
     formData.append('MemberClass', memberClass);
     formData.append('IsTenantDetails', isTenantDetails);
@@ -192,94 +273,10 @@ const handleSubmit = async (e) => {
     formData.append('ReasonOfCessation', reasonOfCessation);
     formData.append('Remark', remark);
 
-    // Check the form data in the console
+    // Log the form data to check before sending
     for (let [key, value] of formData) {
-        console.log(key + ": " + value);
+        console.log(`${key}: ${value}`);
     }
-
-    try {
-        const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Post/postmembernew.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
-            },
-            body: formData.toString(),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            toast.success('Member added successfully!', { autoClose: 5000 });
-            fetchData(); // Assuming you want to reload data
-        } else {
-            const errorData = await response.json();
-            console.error('Error Response:', errorData);
-            toast.error(`Error adding member: ${errorData.message || 'Unknown error'}`);
-        }
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        toast.error('Error submitting form');
-    }
-
-    resetFields();  // Assuming you want to clear the form after submission
-};
-
-const handleUpdate = async (e) => {
-    e.preventDefault();
-
-    const formData = new URLSearchParams();
-    formData.append('Id', MemberData[editingIndex].Id); // Get ID from the current data
-   formData.append('PrintName', printName);
-    formData.append('MemberGroup', memberGroup);
-    formData.append('IsMember', isMember);
-    formData.append('IsActive', isActive);
-    formData.append('PositionNo', positionNo);
-    formData.append('IsBillWise', isBillwise);
-    formData.append('WingName', wingName);
-    formData.append('Floor', floor);
-    formData.append('UnitMember', unitMember);
-    formData.append('UnitType', unitType);
-    formData.append('ParentType', parentType);
-    formData.append('UnitArea', unitArea);
-    formData.append('UOM', uom);
-   formData.append('ConstructionCost', constructionCost);
-   formData.append('ChargesTemplate', chargesTemplate);
-   formData.append('TenantChargesTemplate', tenantChargesTemplate);
-   formData.append('SupplementryChargesTemplate', supplementaryChargesTemplate);
-   formData.append('OwnerType', ownerType);
-   formData.append('MemberClass', memberClass);
-   formData.append('IsTenantDetails', isTenantDetails);
-   formData.append('IsParkingDetails', isParkingDetails);
-   formData.append('IsMemberCharges', isMemberCharges);
-   formData.append('UpdatedMemberName', updatedMemberName);
-   formData.append('MailingName', mailingName);
-   formData.append('Country', country);
-   formData.append('State', state);
-   formData.append('PIN', pin);
-   formData.append('ContactReason', contactReason);
-   formData.append('PhoneNo', phoneNo);
-   formData.append('Mobile', mobile);
-   formData.append('Email', email,);
-   formData.append('IsInterest', isInterest);
-   formData.append('PAN', pan);
-   formData.append('GSTRegistrationOnType', gstRegistrationOnType);
-   formData.append('IsAssesseeOtherTerritory', isAssesseeOtherTerritory);
-   formData.append('IsEcommerce', isEcommerce);
-   formData.append('IsDeemedExport', isDeemedExport);
-   formData.append('PartyType', partyType);
-   formData.append('IsTransporter', isTransporter);
-   formData.append('DateOfAdmission', dateOfAdmission);
-   formData.append('DateOfEntranceFeePayment', dateOfEntranceFeePayment);
-   formData.append('FullName',fullName);
-   formData.append('Occupation', occupation);
-   formData.append('Age', age);
-   formData.append('NameOfNominee', nameOfNominee);
-   formData.append('DateOfNomination', dateOfNomination);
-   formData.append('DateOfCessationOfMembership', dateOfCessationOfMembership);
-   formData.append('ReasonOfCessation', reasonOfCessation);
-   formData.append('Remark', remark);
-
-
 
     try {
         const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatemembernew.php', {
@@ -292,9 +289,15 @@ const handleUpdate = async (e) => {
         });
 
         if (response.ok) {
-            toast.success('Member updated successfully!',{autoClose: 5000, });
-            // Refresh the data after update
-            fetchData();
+            const data = await response.json();
+            // Update state with the new data (e.g., `memberData`)
+            setMemberData(prevData => {
+                const updatedData = [...prevData];
+                updatedData[editingIndex] = data; // Update the correct index with new data
+                return updatedData;
+            });
+            toast.success('Member updated successfully!');
+           fetchData();
         } else {
             const errorData = await response.json();
             toast.error(`Error updating member: ${errorData.message || 'Unknown error'}`);
@@ -303,11 +306,12 @@ const handleUpdate = async (e) => {
         console.error('Error updating member:', error);
         toast.error('Error updating member');
     }
-
+    // Reset fields after submission
     resetFields();
 };
+
 const handleDelete = async (rowIndex) => {
-    const id = MemberData[rowIndex].Id; // Get the ID of the row to be deleted
+    const id = memberData[rowIndex].Id; // Get the ID of the row to be deleted
 
     try {
         const response = await fetch(`https://weaveitapp.microtechsolutions.co.in/api/housing/Delete/delrecord.php?Id=${id}&Table=MemberNew`, {
@@ -321,7 +325,8 @@ const handleDelete = async (rowIndex) => {
         if (response.ok) {
             toast.success('Member deleted successfully!', {autoClose: 5000, });
             // Remove the deleted row from the state
-            setMemberData(MemberData.filter((_, index) => index !== rowIndex));
+            setMemberData(memberData.filter((_, index) => index !== rowIndex));
+            fetchData();
         } else {
             const errorData = await response.json();
             toast.error(`Error deleting member: ${errorData.message || 'Unknown error'}`);
@@ -332,7 +337,7 @@ const handleDelete = async (rowIndex) => {
     }
 };
 const handleEdit = (rowIndex) => {
-    const row = MemberData[rowIndex];
+    const row = memberData[rowIndex];
 
     // Set all the state values from the selected row
     setPrintName(row.PrintName);
@@ -351,7 +356,7 @@ const handleEdit = (rowIndex) => {
     setConstructionCost(row.ConstructionCost);
     setChargesTemplate(row.ChargesTemplate);
     setTenantChargesTemplate(row.TenantChargesTemplate);
-    setSupplementaryChargesTemplate(row.SupplementaryChargesTemplate);
+    setSupplementaryChargesTemplate(row.SupplementryChargesTemplate);
     setOwnerType(row.OwnerType);
     setMemberClass(row.MemberClass);
     setIsTenantDetails(row.IsTenantDetails);
@@ -369,20 +374,20 @@ const handleEdit = (rowIndex) => {
     setIsInterest(row.IsInterest);
     setPan(row.PAN);
     setGstRegistrationOnType(row.GSTRegistrationOnType);
-    setGstin(row.Gstin);
+    setGstin(row.GSTIN);
     setIsAssesseeOtherTerritory(row.IsAssesseeOtherTerritory);
     setIsEcommerce(row.IsEcommerce);
     setIsDeemedExport(row.IsDeemedExport);
     setPartyType(row.PartyType);
     setIsTransporter(row.IsTransporter);
-    setDateOfAdmission(row.DateOfAdmission);
-    setDateOfEntranceFeePayment(row.DateOfEntranceFeePayment);
+    setDateOfAdmission(moment(row.DateOfAdmission).format('YYYY-MM-DD'));
+    setDateOfEntranceFeePayment(moment(row.DateOfEntranceFeePayment).format('YYYY-MM-DD'));
     setFullName(row.FullName);
     setOccupation(row.Occupation);
     setAge(row.Age);
     setNameOfNominee(row.NameOfNominee);
-    setDateOfNomination(row.DateOfNomination);
-    setDateOfCessationOfMembership(row.DateOfCessationOfMembership);
+    setDateOfNomination(moment(row.DateOfNomination).format('YYYY-MM-DD'));
+    setDateOfCessationOfMembership(moment(row.DateOfCessationOfMembership).format('YYYY-MM-DD'));
     setReasonOfCessation(row.ReasonOfCessation);
     setRemark(row.Remark);
 
@@ -444,6 +449,7 @@ const resetFields = () => {
     setReasonOfCessation('');
     setRemark('');
     setShowMembernew(false);
+    setEditingIndex(null);
   };
   
     const columns = [
@@ -505,7 +511,7 @@ const resetFields = () => {
                     <Tab label="Tab 3"  className={`tab ${activeTab === 2 ? 'active' : ''}`}/>
                 </Tabs>
 
-                <form onSubmit={handleSubmit} className="memberform-container">
+                <form onSubmit={editingIndex !== null ? handleUpdate : handleSubmit}>
                     {activeTab === 0 && (
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
@@ -513,8 +519,7 @@ const resetFields = () => {
                                     <label>Print Name</label>
                                     <TextField
                                         value={printName}
-                                        onChange={(e) => setPrintName(e.target.value)}
-                                        required
+                                        onChange={(e) => setPrintName(e.target.value)}                                
                                         size="small"
                                     />
                                 </div>
@@ -526,7 +531,6 @@ const resetFields = () => {
                                     <TextField
                                         value={memberGroup}
                                         onChange={(e) => setMemberGroup(e.target.value)}
-                                        required
                                         size="small"
                                     />
                                 </div>
@@ -767,7 +771,7 @@ const resetFields = () => {
                                                 <MenuItem value="">{error}</MenuItem>
                                               ) : (
                                                 countryOptions.map((option, index) => (
-                                                    <MenuItem key={index} value={option.Name}>{option.Name}</MenuItem>  // Use StateName as the value
+                                                    <MenuItem key={index} value={option.Id}>{option.Name}</MenuItem>  // Use StateName as the value
                                                 ))
                                               )}</Select>
                                 </div>
@@ -787,7 +791,7 @@ const resetFields = () => {
                                                     <MenuItem value="">{error}</MenuItem>
                                                   ) : (
                                                     stateOptions.map((option, index) => (
-                                                        <MenuItem key={index} value={option.StateName}>{option.StateName}</MenuItem>  // Use StateName as the value
+                                                        <MenuItem key={index} value={option.Id}>{option.StateName}</MenuItem>  // Use StateName as the value
                                                     ))
                                                   )}</Select>
                                     
@@ -1046,11 +1050,9 @@ const resetFields = () => {
 <div className="button-group-bottom">
     {activeTab === 2 ? (
         <>
-            <button className="submit" type="submit"
-            onClick={editingIndex !== null ? handleUpdate : handleSubmit}
-            >
-              {editingIndex !== null ? 'Update' : 'Save'}
-            </button>
+            <button className="submit" type="submit">
+    {editingIndex !== null ? 'Update' : 'Save'}
+  </button>
             {/* Close Button */}
             <button
                 type="button"
@@ -1076,7 +1078,7 @@ const resetFields = () => {
           <Paper style={{ marginTop: '20px', padding: '10px', maxWidth: '1000px', margin: '0 auto' }}>
           <MaterialReactTable
               columns={columns}  // The columns you defined earlier
-              data={MemberData}
+              data={memberData}
           />
       </Paper>   
            )}
