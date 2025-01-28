@@ -213,13 +213,135 @@ const handleSubmit = async (e) => {
 };
 
 
+// const handleUpdate = async (e) => {
+//     e.preventDefault();
+
+//     if (editingIndex === null) {
+//         toast.error('No ID selected for update.');
+//         return;
+//     }
+
+//     // Collect all form fields in an object
+//     const fields = {
+//         Id: memberData[editingIndex].Id,
+//         PrintName: printName,
+//         MemberGroup: memberGroup,
+//         IsMember: isMember,
+//         IsActive: isActive,
+//         PositionNo: positionNo,
+//         IsBillWise: isBillwise,
+//         WingName: wingName,
+//         Floor: floor,
+//         UnitMember: unitMember,
+//         UnitType: unitType,
+//         ParentType: parentType,
+//         UnitArea: unitArea,
+//         UOM: uom,
+//         ConstructionCost: constructionCost,
+//         ChargesTemplate: chargesTemplate,
+//         TenantChargesTemplate: tenantChargesTemplate,
+//         SupplementryChargesTemplate: supplementaryChargesTemplate,
+//         OwnerType: ownerType,
+//         MemberClass: memberClass,
+//         IsTenantDetails: isTenantDetails,
+//         IsParkingDetails: isParkingDetails,
+//         IsMemberCharges: isMemberCharges,
+//         UpdatedMemberName: updatedMemberName,
+//         MailingName: mailingName,
+//         Country: country,
+//         State: state,
+//         PIN: pin,
+//         ContactReason: contactReason,
+//         PhoneNo: phoneNo,
+//         Mobile: mobile,
+//         Email: email,
+//         IsInterest: isInterest,
+//         PAN: pan,
+//         GSTRegistrationOnType: gstRegistrationOnType,
+//         GSTIN: gstin,
+//         IsAssesseeOtherTerritory: isAssesseeOtherTerritory,
+//         IsEcommerce: isEcommerce,
+//         IsDeemedExport: isDeemedExport,
+//         PartyType: partyType,
+//         IsTransporter: isTransporter,
+//         DateOfAdmission: dateOfAdmission,
+//         DateOfEntranceFeePayment: dateOfEntranceFeePayment,
+//         FullName: fullName,
+//         Occupation: occupation,
+//         Age: age,
+//         NameOfNominee: nameOfNominee,
+//         DateOfNomination: dateOfNomination,
+//         DateOfCessationOfMembership: dateOfCessationOfMembership,
+//         ReasonOfCessation: reasonOfCessation,
+//         Remark: remark
+//     };
+//     console.log('Fields object before appending:', fields);
+//     // Create FormData from the fields object, omitting empty/null/undefined fields
+//     const formData = new URLSearchParams();
+//     Object.entries(fields).forEach(([key, value]) => {
+//         if (value || value === 0) {  // Check if value is not undefined, null, or empty string
+//             formData.append(key, value);
+//         }
+//     });
+
+//     // Log the form data to check before sending
+//     for (let [key, value] of formData) {
+//         console.log(`${key}: ${value}`);
+//     }
+
+//     try {
+//         const response = await fetch('https://weaveitapp.microtechsolutions.co.in/api/housing/Update/updatemembernew.php', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/x-www-form-urlencoded',
+//                 'X-API-KEY': 'f4e3d2c1b0a9g8h7i6j5',
+//             },
+//             body: formData.toString(),
+//         });
+
+//         const text = await response.text();  // Get the response as text
+//         console.log('Response Text:', text);  // Log the raw response
+
+//         // Try parsing the response as JSON
+//         let data;
+//         try {
+//             data = JSON.parse(text);
+//         } catch (err) {
+//             console.error('Error parsing JSON:', err);
+//             toast.error('Error: Response not in valid JSON format');
+//             return;
+//         }
+
+//         // Handle success or error based on the parsed data
+//         if (data.success) {
+//             setMemberData(prevData => {
+//                 const updatedData = [...prevData];
+//                 updatedData[editingIndex] = data;
+//                 return updatedData;
+//             });
+//             toast.success('Member updated successfully!');
+//             fetchData();  // Fetch updated data
+//         } else {
+//             // If the data has an error field
+//             if (data.error) {
+//                 toast.error(`Error updating member: ${data.error}`);
+//             } else {
+//                 toast.error('Unknown error occurred');
+//             }
+//         }
+//     } catch (error) {
+//         console.error('Error updating member:', error);
+//         toast.error('Error updating member');
+//     }
+//     resetFields();  // Reset fields after submission
+// };
 const handleUpdate = async (e) => {
     e.preventDefault();
 
     if (editingIndex === null) {
         toast.error('No ID selected for update.');
         return;
-      }
+    }
 
     const formData = new URLSearchParams();
     formData.append('Id', memberData[editingIndex].Id); // Get ID from the current data
@@ -239,7 +361,11 @@ const handleUpdate = async (e) => {
     formData.append('ConstructionCost', constructionCost);
     formData.append('ChargesTemplate', chargesTemplate);
     formData.append('TenantChargesTemplate', tenantChargesTemplate);
-    formData.append('SupplementryChargesTemplate', supplementaryChargesTemplate);
+
+    // Place the log here
+    console.log('SupplementaryChargesTemplate:', supplementaryChargesTemplate);
+    formData.append('SupplementaryChargesTemplate', supplementaryChargesTemplate);
+
     formData.append('OwnerType', ownerType);
     formData.append('MemberClass', memberClass);
     formData.append('IsTenantDetails', isTenantDetails);
@@ -288,26 +414,41 @@ const handleUpdate = async (e) => {
             body: formData.toString(),
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            // Update state with the new data (e.g., `memberData`)
+        const text = await response.text();  // Get the response as text
+        console.log('Response Text:', text);  // Log the raw response
+
+        // Try parsing the response as JSON
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (err) {
+            console.error('Error parsing JSON:', err);
+            toast.error('Error: Response not in valid JSON format');
+            return;
+        }
+
+        // Handle success or error based on the parsed data
+        if (data.success) {
             setMemberData(prevData => {
                 const updatedData = [...prevData];
-                updatedData[editingIndex] = data; // Update the correct index with new data
+                updatedData[editingIndex] = data;
                 return updatedData;
             });
             toast.success('Member updated successfully!');
-           fetchData();
+            fetchData();  // Fetch updated data
         } else {
-            const errorData = await response.json();
-            toast.error(`Error updating member: ${errorData.message || 'Unknown error'}`);
+            // If the data has an error field
+            if (data.error) {
+                toast.error(`Error updating member: ${data.error}`);
+            } else {
+                toast.error('Unknown error occurred');
+            }
         }
     } catch (error) {
         console.error('Error updating member:', error);
         toast.error('Error updating member');
     }
-    // Reset fields after submission
-    resetFields();
+    resetFields();  // Reset fields after submission
 };
 
 const handleDelete = async (rowIndex) => {
@@ -518,7 +659,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Print Name</label>
                                     <TextField
-                                        value={printName}
+                                        value={printName || ''}
                                         onChange={(e) => setPrintName(e.target.value)}                                
                                         size="small"
                                     />
@@ -529,7 +670,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Member Group</label>
                                     <TextField
-                                        value={memberGroup}
+                                        value={memberGroup || ''}
                                         onChange={(e) => setMemberGroup(e.target.value)}
                                         size="small"
                                     />
@@ -576,7 +717,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Wing Name</label>
                                     <TextField
-                                        value={wingName}
+                                        value={wingName || ''}
                                         onChange={(e) => setWingName(e.target.value)}                 
                                         required
                                         size="small"
@@ -587,7 +728,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Floor</label>
                                     <TextField
-                                        value={floor}
+                                        value={floor|| ''}
                                         onChange={(e) => setFloor(e.target.value)}
                                         required
                                         size="small"
@@ -598,7 +739,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Unit Member</label>
                                     <TextField
-                                        value={unitMember}
+                                        value={unitMember|| ''}
                                         onChange={(e) => setUnitMember(e.target.value)}                   
                                         required
                                         size="small"
@@ -609,7 +750,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Unit Type</label>
                                     <TextField
-                                        value={unitType}
+                                        value={unitType|| ''}
                                         onChange={(e) => setUnitType(e.target.value)}               
                                         size="small"
                                     />
@@ -619,7 +760,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Parent Type</label>
                                     <TextField
-                                        value={parentType}
+                                        value={parentType|| ''}
                                         onChange={(e) => setParentType(e.target.value)}                   
                                         size="small"
                                     />
@@ -629,7 +770,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Unit Area</label>
                                     <TextField
-                                        value={unitArea}
+                                        value={unitArea|| ''}
                                         onChange={(e) => setUnitArea(e.target.value)}                 
                                         size="small"
                                     />
@@ -639,7 +780,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>UOM</label>
                                     <TextField
-                                        value={uom}
+                                        value={uom || ''}
                                         onChange={(e) => setUom(e.target.value)}
                                         size="small"
                                     />
@@ -649,7 +790,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Construction Cost</label>
                                     <TextField
-                                        value={constructionCost}
+                                        value={constructionCost || ''}
                                         onChange={(e) => setConstructionCost(e.target.value)}            
                                         size="small"
                                     />
@@ -659,7 +800,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Charges Template</label>
                                     <TextField
-                                        value={chargesTemplate}
+                                        value={chargesTemplate || ''}
                                         onChange={(e) => setChargesTemplate(e.target.value)}                   
                                         size="small"
                                     />
@@ -669,7 +810,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Tenant Charges Template</label>
                                     <TextField
-                                        value={tenantChargesTemplate}
+                                        value={tenantChargesTemplate || ''}
                                         onChange={(e) => setTenantChargesTemplate(e.target.value)}                    
                                         size="small"
                                     />
@@ -679,7 +820,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Supplementry Charges Template</label>
                                     <TextField
-                                        value={supplementaryChargesTemplate}
+                                        value={supplementaryChargesTemplate|| ''}
                                         onChange={(e) => setSupplementaryChargesTemplate(e.target.value)}            
                                         size="small"
                                     />
@@ -694,7 +835,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Owner Type</label>
                                     <TextField
-                                        value={ownerType}
+                                        value={ownerType|| ''}
                                         onChange={(e) => setOwnerType(e.target.value)}               
                                         size="small"
                                     />
@@ -704,7 +845,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Member Class</label>
                                     <TextField
-                                        value={memberClass}
+                                        value={memberClass|| ''}
                                         onChange={(e) => setMemberClass(e.target.value)}        
                                         size="small"
                                     />
@@ -741,7 +882,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Updated Member Name</label>
                                     <TextField
-                                        value={updatedMemberName}
+                                        value={updatedMemberName|| ''}
                                         onChange={(e) => setUpdatedMemberName(e.target.value)}                  
                                         size="small"
                                     />
@@ -751,7 +892,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Mailing Name</label>
                                     <TextField
-                                        value={mailingName}
+                                        value={mailingName|| ''}
                                         onChange={(e) => setMailingName(e.target.value)}
                                         size="small"
                                     />
@@ -761,7 +902,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Country</label>
                                     <Select
-                                        value={country}
+                                        value={country|| ''}
                                         onChange={(e) => setCountry(e.target.value)}
                                         size="small"
                                         style={{ width: '230px' }}
@@ -780,7 +921,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>State</label>
                                     <Select
-                                        value={state}
+                                        value={state|| ''}
                                         onChange={(e) => setState(e.target.value)}
                                         size="small"
                                         style={{ width: '230px' }}
@@ -801,7 +942,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>PIN</label>
                                     <TextField
-                                        value={pin}
+                                        value={pin|| ''}
                                         onChange={(e) => setPin(e.target.value)}
                                         size="small"
                                     />
@@ -811,7 +952,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Contact Reason</label>
                                     <TextField
-                                        value={contactReason}
+                                        value={contactReason|| ''}
                                         onChange={(e) => setContactReason(e.target.value)}
                                         size="small"
                                     />
@@ -821,7 +962,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Phone No</label>
                                     <TextField
-                                        value={phoneNo}
+                                        value={phoneNo|| ''}
                                         onChange={(e) => setPhoneNo(e.target.value)}
                                         size="small"
                                     />
@@ -831,7 +972,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Mobile</label>
                                     <TextField
-                                        value={mobile}
+                                        value={mobile|| ''}
                                         onChange={(e) => setMobile(e.target.value)}
                                         size="small"
                                     />
@@ -841,7 +982,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Email</label>
                                     <TextField
-                                        value={email}
+                                        value={email|| ''}
                                         onChange={(e) => setEmail(e.target.value)}
                                         size="small"
                                     />
@@ -860,7 +1001,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>PAN</label>
                                     <TextField
-                                        value={pan}
+                                        value={pan|| ''}
                                         onChange={(e) => setPan(e.target.value)}
                                         size="small"
                                     />
@@ -875,7 +1016,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>GST Registration On Type</label>
                                     <TextField
-                                        value={gstRegistrationOnType}
+                                        value={gstRegistrationOnType|| ''}
                                         onChange={(e) => setGstRegistrationOnType(e.target.value)}
                                         size="small"
                                     />
@@ -885,7 +1026,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>GSTIN</label>
                                     <TextField
-                                        value={gstin}
+                                        value={gstin|| ''}
                                         onChange={(e) => setGstin(e.target.value)}
                                         size="small"
                                     />
@@ -922,7 +1063,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Party Type</label>
                                     <TextField
-                                        value={partyType}
+                                        value={partyType|| ''}
                                         onChange={(e) => setPartyType(e.target.value)}
                                         size="small"
                                     />
@@ -942,7 +1083,7 @@ const resetFields = () => {
                                     <label>Date Of Admission</label>
                                     <TextField
                                     type='date'
-                                        value={dateOfAdmission}
+                                        value={dateOfAdmission|| ''}
                                         onChange={(e) => setDateOfAdmission(e.target.value)}
                                         size="small"
                                     />
@@ -953,7 +1094,7 @@ const resetFields = () => {
                                     <label>Date Of Entrance Fee Payment</label>
                                     <TextField
                                     type='date'
-                                        value={dateOfEntranceFeePayment}
+                                        value={dateOfEntranceFeePayment|| ''}
                                         onChange={(e) => setDateOfEntranceFeePayment(e.target.value)}
                                         size="small"
                                     />
@@ -963,9 +1104,8 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Full Name</label>
                                     <TextField
-                                        value={fullName}
+                                        value={fullName|| ''}
                                         onChange={(e) => setFullName(e.target.value)}                  
-                                        required
                                         size="small"
                                     />
                                 </div>
@@ -974,7 +1114,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Occupation</label>
                                     <TextField
-                                        value={occupation}
+                                        value={occupation|| ''}
                                         onChange={(e) => setOccupation(e.target.value)}                
                                         size="small"
                                     />
@@ -984,7 +1124,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Age</label>
                                     <TextField
-                                        value={age}
+                                        value={age|| ''}
                                         onChange={(e) => setAge(e.target.value)}                
                                         size="small"
                                     />
@@ -994,7 +1134,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Name Of Nominee</label>
                                     <TextField
-                                        value={nameOfNominee}
+                                        value={nameOfNominee|| ''}
                                         onChange={(e) => setNameOfNominee(e.target.value)}                
                                         size="small"
                                     />
@@ -1005,7 +1145,7 @@ const resetFields = () => {
                                     <label>Date Of Nominee</label>
                                     <TextField
                                     type='date'
-                                        value={dateOfNomination}
+                                        value={dateOfNomination|| ''}
                                         onChange={(e) => setDateOfNomination(e.target.value)}                
                                         size="small"
                                     />
@@ -1016,7 +1156,7 @@ const resetFields = () => {
                                     <label>Date Of Cessation Of Membership</label>
                                     <TextField
                                     type='date'
-                                        value={dateOfCessationOfMembership}
+                                        value={dateOfCessationOfMembership|| ''}
                                         onChange={(e) => setDateOfCessationOfMembership(e.target.value)}                
                                         size="small"
                                     />
@@ -1026,7 +1166,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Reason Of Cessation</label>
                                     <TextField
-                                        value={reasonOfCessation}
+                                        value={reasonOfCessation|| ''}
                                         onChange={(e) => setReasonOfCessation(e.target.value)}                
                                         size="small"
                                     />
@@ -1036,7 +1176,7 @@ const resetFields = () => {
                                 <div className="input-group">
                                     <label>Remark</label>
                                     <TextField
-                                        value={remark}
+                                        value={remark|| ''}
                                         onChange={(e) => setRemark(e.target.value)}                
                                         size="small"
                                         multiline
