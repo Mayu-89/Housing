@@ -11,7 +11,7 @@ const Dashboard = () => {
   const handleClick = (type) => {
     switch(type) {
       case 'members':
-        navigate('/member/membergroup');
+        navigate('/member/membernew');
         break;
       case 'property':
         navigate('/property/updateproperty');
